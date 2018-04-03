@@ -9,6 +9,8 @@ import android.view.WindowManager;
 
 import com.blue.mediaplayer.R;
 
+import org.greenrobot.eventbus.EventBus;
+
 public class SplashActivity extends AppCompatActivity {
 
     private Handler handler = new Handler();

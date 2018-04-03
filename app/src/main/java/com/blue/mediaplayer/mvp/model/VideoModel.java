@@ -10,6 +10,11 @@ import android.os.Message;
 import android.provider.MediaStore;
 
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.bean.MessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +33,8 @@ public class VideoModel {
     }
 
     public void getVideoList(videoDataInterface mVideoDataInterface) {
-        this.mVideoDataInterface=mVideoDataInterface;
+        this.mVideoDataInterface = mVideoDataInterface;
+        EventBus.getDefault().register(this);
         new Thread() {
             @Override
             public void run() {
@@ -57,8 +63,7 @@ public class VideoModel {
                     cursor.close();
                 }
                 //回调得到的数据
-                handler.sendEmptyMessage(10);
-
+                EventBus.getDefault().post(new MessageEvent());
             }
 
         }.start();
@@ -68,13 +73,12 @@ public class VideoModel {
         void getDataList(List<MediaItem> mediaItemList);
     }
 
-    private Handler handler = new Handler(Looper.getMainLooper()){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (mVideoDataInterface != null) {
-                mVideoDataInterface.getDataList(mediaItemList);
-            }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(MessageEvent messageEvent) {
+        if (mVideoDataInterface != null) {
+            mVideoDataInterface.getDataList(mediaItemList);
         }
-    };
+        EventBus.getDefault().unregister(this);
+    }
+
 }

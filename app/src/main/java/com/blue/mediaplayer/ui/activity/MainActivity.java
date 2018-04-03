@@ -1,5 +1,6 @@
 package com.blue.mediaplayer.ui.activity;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import com.blue.mediaplayer.adapter.MFragmentPagerAdapter;
 import com.blue.mediaplayer.ui.fragment.AudioFragment;
 import com.blue.mediaplayer.ui.fragment.DynamicFragment;
 import com.blue.mediaplayer.ui.fragment.VideoFragment;
+import com.blue.model_basic.utils.DeviceInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
      * 初始化动画
      */
     private void InitImageView() {
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        DeviceInfo deviceInfo = new DeviceInfo(this);
         // 获取分辨率宽度
-        int screenW = dm.widthPixels;
+        int[] displayMetrics = deviceInfo.getDisplayMetrics();
+        int screenW = displayMetrics[0];
         int imageWidth = (screenW / 3);
         //设置动画图片宽度
         setImageWidth(cursor, imageWidth);
@@ -136,7 +138,11 @@ public class MainActivity extends AppCompatActivity {
                     } else if (currIndex == 2) {//从页卡3跳转转到页卡1
                         animation = new TranslateAnimation(position_two, 0, 0, 0);
                     }
-                    //当前为页卡2
+                    setVideoDrawable(true);
+                    setAutioDrawable(false);
+                    setDynamicDrawable(false);
+                    break;
+                //当前为页卡2
                 case 1:
                     //从页卡1跳转转到页卡2
                     if (currIndex == 0) {
@@ -144,6 +150,9 @@ public class MainActivity extends AppCompatActivity {
                     } else if (currIndex == 2) { //从页卡3跳转转到页卡2
                         animation = new TranslateAnimation(position_two, position_one, 0, 0);
                     }
+                    setAutioDrawable(true);
+                    setVideoDrawable(false);
+                    setDynamicDrawable(false);
                     break;
                 //当前为页卡3
                 case 2:
@@ -153,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
                     } else if (currIndex == 1) {//从页卡2跳转转到页卡3
                         animation = new TranslateAnimation(position_one, position_two, 0, 0);
                     }
+                    setDynamicDrawable(true);
+                    setVideoDrawable(false);
+                    setAutioDrawable(false);
+                    break;
             }
             currIndex = position;
             animation.setFillAfter(true);// true:图片停在动画结束位置
@@ -164,6 +177,36 @@ public class MainActivity extends AppCompatActivity {
         public void onPageScrollStateChanged(int state) {
 
         }
+    }
+
+    private void setDynamicDrawable(boolean isPressed) {
+        int drawable = R.drawable.ic_tab_dynamic;
+        if (isPressed) {
+            drawable = R.drawable.ic_tab_dynamic_press;
+        }
+        Drawable dynamicTop = getResources().getDrawable(drawable);
+        dynamicTop.setBounds(0, 0, dynamicTop.getMinimumHeight(), dynamicTop.getMinimumHeight());
+        tv_dynamic.setCompoundDrawables(null, dynamicTop, null, null);
+    }
+
+    private void setAutioDrawable(boolean isPressed) {
+        int drawable = R.drawable.ic_tab_audio;
+        if (isPressed) {
+            drawable = R.drawable.ic_tab_audio_press;
+        }
+        Drawable autioTop = getResources().getDrawable(drawable);
+        autioTop.setBounds(0, 0, autioTop.getMinimumHeight(), autioTop.getMinimumHeight());
+        tv_audo.setCompoundDrawables(null, autioTop, null, null);
+    }
+
+    private void setVideoDrawable(boolean isPressed) {
+        int drawable = R.drawable.ic_tab_video;
+        if (isPressed) {
+            drawable = R.drawable.ic_tab_video_press;
+        }
+        Drawable videoTop = getResources().getDrawable(drawable);
+        videoTop.setBounds(0, 0, videoTop.getMinimumHeight(), videoTop.getMinimumHeight());
+        tv_video.setCompoundDrawables(null, videoTop, null, null);
     }
 
     @OnClick({R.id.rb_video, R.id.rb_audio, R.id.rb_dynamic})

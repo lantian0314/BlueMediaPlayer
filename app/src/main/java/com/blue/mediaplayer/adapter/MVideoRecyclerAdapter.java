@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.bean.MediaItem;
-import com.blue.mediaplayer.utils.Utils;
+import com.blue.model_basic.utils.Utils;
 
 import java.util.List;
 

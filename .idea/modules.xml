@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BlueMediaPlayer.iml" filepath="$PROJECT_DIR$/BlueMediaPlayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/model_basic/model_basic.iml" filepath="$PROJECT_DIR$/model_basic/model_basic.iml" />
     </modules>
   </component>
 </project>

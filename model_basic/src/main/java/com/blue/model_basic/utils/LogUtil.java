@@ -1,4 +1,4 @@
-package com.blue.mediaplayer.utils;
+package com.blue.model_basic.utils;
 
 import android.os.Environment;
 import android.text.TextUtils;
