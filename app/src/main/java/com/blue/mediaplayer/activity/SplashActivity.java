@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 
 import com.blue.mediaplayer.R;
@@ -37,6 +38,12 @@ public class SplashActivity extends AppCompatActivity {
             //关闭当前页面
             finish();
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        startMainActivity();
+        return super.onTouchEvent(event);
     }
 
     @Override

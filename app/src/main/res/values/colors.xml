@@ -3,4 +3,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="matrix_color">#ffffff</color>
+    <color name="white">#ffffff</color>
+    <color name="red">#FFFF1826</color>
+    <color name="blue">#0000ff</color>
+    <color name="black">#000000</color>
 </resources>
