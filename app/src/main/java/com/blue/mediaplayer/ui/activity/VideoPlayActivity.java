@@ -34,7 +34,7 @@ public class VideoPlayActivity extends AppCompatActivity {
         mVideoView.setOnErrorListener(new onMyErrorListener());
         mVideoView.setOnCompletionListener(new onMyCompletionListener());
         //设置控制面板
-        mVideoView.setMediaController(new MediaController(this));
+        //mVideoView.setMediaController(new MediaController(this));
     }
 
     /**
