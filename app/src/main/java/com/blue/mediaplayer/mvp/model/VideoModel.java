@@ -24,7 +24,7 @@ import java.util.List;
  */
 
 public class VideoModel {
-    private List<MediaItem> mediaItemList = null;
+    private ArrayList<MediaItem> mediaItemList = null;
     private Context mContext;
     private videoDataInterface mVideoDataInterface;
 
@@ -70,7 +70,7 @@ public class VideoModel {
     }
 
     public interface videoDataInterface {
-        void getDataList(List<MediaItem> mediaItemList);
+        void getDataList(ArrayList<MediaItem> mediaItemList);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

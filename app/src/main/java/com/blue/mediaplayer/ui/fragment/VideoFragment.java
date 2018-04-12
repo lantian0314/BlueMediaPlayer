@@ -22,6 +22,7 @@ import com.blue.mediaplayer.mvp.persenter.VideoPresenter;
 import com.blue.mediaplayer.mvp.view.VideoView;
 import com.blue.mediaplayer.ui.activity.VideoPlayActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class VideoFragment extends Fragment implements VideoView {
 
 
     private Context mContext;
-    private List<MediaItem> mediaItemList;
+    private ArrayList<MediaItem> mediaItemList;
     private VideoPresenter videoPresenter;
 
     @Override
@@ -58,7 +59,7 @@ public class VideoFragment extends Fragment implements VideoView {
     }
 
     @Override
-    public void videoList(List<MediaItem> mediaItemList) {
+    public void videoList(ArrayList<MediaItem> mediaItemList) {
         if (mediaItemList != null && mediaItemList.size() > 0) {
             this.mediaItemList = mediaItemList;
             //设置适配器
@@ -84,10 +85,18 @@ public class VideoFragment extends Fragment implements VideoView {
         @Override
         public void onItemClick(View view, int position) {
             //Toast.makeText(mContext, "点击" + position, Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(mContext, VideoPlayActivity.class);
+//            String dataPath = mediaItemList.get(position).getData();
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.setDataAndType(Uri.parse(dataPath), "video/*");
+//            mContext.startActivity(intent);
+            //传递列表数据-序列化
             Intent intent = new Intent(mContext, VideoPlayActivity.class);
-            String dataPath = mediaItemList.get(position).getData();
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setDataAndType(Uri.parse(dataPath), "video/*");
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("videolist", mediaItemList);
+            intent.putExtras(bundle);
+            intent.putExtra("position", position);
             mContext.startActivity(intent);
         }
     }

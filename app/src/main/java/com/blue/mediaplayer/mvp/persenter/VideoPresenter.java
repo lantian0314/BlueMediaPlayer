@@ -6,6 +6,7 @@ import com.blue.mediaplayer.bean.MediaItem;
 import com.blue.mediaplayer.mvp.model.VideoModel;
 import com.blue.mediaplayer.mvp.view.VideoView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class VideoPresenter extends BasePresenter<VideoView> {
         videoView=getView();
         videoModel.getVideoList(new VideoModel.videoDataInterface() {
             @Override
-            public void getDataList(List<MediaItem> mediaItemList) {
+            public void getDataList(ArrayList<MediaItem> mediaItemList) {
                 if (videoView!=null){
                     videoView.videoList(mediaItemList);
                 }

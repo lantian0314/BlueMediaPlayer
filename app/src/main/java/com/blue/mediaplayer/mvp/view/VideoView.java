@@ -2,6 +2,7 @@ package com.blue.mediaplayer.mvp.view;
 
 import com.blue.mediaplayer.bean.MediaItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,5 +10,5 @@ import java.util.List;
  */
 
 public interface VideoView {
-    void videoList(List<MediaItem> mediaItemList);
+    void videoList(ArrayList<MediaItem> mediaItemList);
 }

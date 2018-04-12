@@ -1,10 +1,12 @@
 package com.blue.mediaplayer.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by xingyatong on 2018/4/2.
  */
 
-public class MediaItem {
+public class MediaItem implements Serializable{
 
     private String name;
 
