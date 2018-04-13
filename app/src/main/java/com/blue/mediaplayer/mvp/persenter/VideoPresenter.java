@@ -7,7 +7,6 @@ import com.blue.mediaplayer.mvp.model.VideoModel;
 import com.blue.mediaplayer.mvp.view.VideoView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by xingyatong on 2018/4/2.

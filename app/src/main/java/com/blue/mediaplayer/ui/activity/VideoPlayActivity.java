@@ -341,11 +341,11 @@ public class VideoPlayActivity extends AppCompatActivity {
         }
     }
 
-    class VoiceOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener{
+    class VoiceOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (fromUser){
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,progress,0);
+            if (fromUser) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
                 seekbar_voice.setProgress(progress);
             }
         }

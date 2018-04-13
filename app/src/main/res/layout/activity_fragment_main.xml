@@ -50,21 +50,18 @@
         android:id="@+id/rb_video"
         style="@style/tv_video"
         android:drawableTop="@drawable/tv_video_drawable_selector"
-        android:onClick="txtClick"
         android:text="@string/video" />
 
         <RadioButton
             android:id="@+id/rb_audio"
             style="@style/tv_video"
             android:drawableTop="@drawable/tv_audio_drawable_selector"
-            android:onClick="txtClick"
             android:text="@string/audio" />
 
         <RadioButton
             android:id="@+id/rb_dynamic"
             style="@style/tv_video"
             android:drawableTop="@drawable/tv_dynamic_drawable_selector"
-            android:onClick="txtClick"
             android:text="@string/dynamic" />
     </RadioGroup>
 </LinearLayout>

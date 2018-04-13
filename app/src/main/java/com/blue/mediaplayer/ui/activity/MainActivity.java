@@ -2,12 +2,12 @@ package com.blue.mediaplayer.ui.activity;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onPageSelected(int position) {
+        public void onPageSelected(@IntRange(from = 0, to = 10) int position) {
             Animation animation = null;
             switch (position) {
                 //当前为页卡1
