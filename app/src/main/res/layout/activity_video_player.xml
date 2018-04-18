@@ -3,10 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <VideoView
+    <com.blue.mediaplayer.view.VideoView
         android:id="@+id/vv_videoplayer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <include layout="@layout/media_contoller" android:id="@+id/media_controller"/>
+
+    <include
+        android:id="@+id/media_controller"
+        layout="@layout/media_contoller"
+        android:visibility="invisible" />
 
 </RelativeLayout>

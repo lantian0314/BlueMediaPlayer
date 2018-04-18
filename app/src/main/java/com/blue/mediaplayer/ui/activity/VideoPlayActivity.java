@@ -13,16 +13,19 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.view.VideoView;
 import com.blue.model_basic.utils.DeviceInfo;
 import com.blue.model_basic.utils.Utils;
 
@@ -47,6 +50,8 @@ public class VideoPlayActivity extends AppCompatActivity {
     Button btn_video_pre;
     @BindView(R.id.btn_video_next)
     Button btn_video_next;
+    @BindView(R.id.btn_video_siwch_screen)
+    Button btn_video_siwch_screen;
     @BindView(R.id.tv_name)
     TextView tv_name;
     @BindView(R.id.tv_system_time)
@@ -61,6 +66,8 @@ public class VideoPlayActivity extends AppCompatActivity {
     SeekBar seekbar_video;
     @BindView(R.id.seekbar_voice)
     SeekBar seekbar_voice;
+    @BindView(R.id.media_controller)
+    RelativeLayout media_controller;
 
     private Uri uri;
     private ArrayList<MediaItem> mediaItems;
@@ -71,7 +78,21 @@ public class VideoPlayActivity extends AppCompatActivity {
     private AudioManager audioManager;
     private int currentVoice;
     private int maxVoice;
-
+    private GestureDetector gestureDetector;
+    private boolean isShowMediaController = false;//是否展示控制面板
+    /**
+     * 视频的宽高
+     */
+    private int videoWidth;
+    private int videoHeigh;
+    /**
+     * 屏幕的宽高
+     */
+    private int screenWidth;
+    private int screenHeight;
+    private final int FULL_SCREEN = 10;
+    private final int DEFAULT_SCREEN = 20;
+    private boolean isFullState = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,6 +111,7 @@ public class VideoPlayActivity extends AppCompatActivity {
         mVideoView.setOnCompletionListener(new onMyCompletionListener());
         seekbar_video.setOnSeekBarChangeListener(new VideoOnSeekBarChangeListener());
         seekbar_voice.setOnSeekBarChangeListener(new VoiceOnSeekBarChangeListener());
+        gestureDetector = new GestureDetector(this, new MySimpleOnGestureListener());
     }
 
     private void setVideoData() {
@@ -104,6 +126,9 @@ public class VideoPlayActivity extends AppCompatActivity {
         mediaItems = (ArrayList<MediaItem>) getIntent().getSerializableExtra("videolist");
         position = getIntent().getIntExtra("position", 0);
         deviceInfo = new DeviceInfo(getApplicationContext());
+        int[] metrics = deviceInfo.getDisplayMetrics();
+        screenWidth = metrics[0];
+        screenHeight = metrics[1];
         if (mediaItems != null && mediaItems.size() > 0) {
             MediaItem mediaItem = mediaItems.get(position);
             tv_name.setText(mediaItem.getName());
@@ -127,6 +152,9 @@ public class VideoPlayActivity extends AppCompatActivity {
     class onMyPrepareListener implements MediaPlayer.OnPreparedListener {
         @Override
         public void onPrepared(MediaPlayer mp) {
+            videoWidth = mp.getVideoWidth();
+            videoHeigh = mp.getVideoHeight();
+            setDefaultAndFullScreen(DEFAULT_SCREEN);
             mVideoView.start();
             //得到视频的总长度
             int duration = mVideoView.getDuration();
@@ -157,7 +185,7 @@ public class VideoPlayActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick({R.id.btn_video_start_pause, R.id.btn_exit, R.id.btn_video_pre, R.id.btn_video_next})
+    @OnClick({R.id.btn_video_start_pause, R.id.btn_exit, R.id.btn_video_pre, R.id.btn_video_next,R.id.btn_video_siwch_screen})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_video_start_pause:
@@ -172,6 +200,20 @@ public class VideoPlayActivity extends AppCompatActivity {
             case R.id.btn_video_next:
                 playNextVideo();
                 break;
+            case R.id.btn_video_siwch_screen:
+                setVideoType();
+                break;
+        }
+    }
+
+    /**
+     * 设置视频的屏幕样式
+     */
+    private void setVideoType() {
+        if (isFullState) {
+            setDefaultAndFullScreen(DEFAULT_SCREEN);
+        } else {
+            setDefaultAndFullScreen(FULL_SCREEN);
         }
     }
 
@@ -270,7 +312,44 @@ public class VideoPlayActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 设置默认和全屏
+     *
+     * @param type
+     */
+    private void setDefaultAndFullScreen(int type) {
+        switch (type) {
+            case FULL_SCREEN:
+                //改变全屏状态
+                isFullState = true;
+                mVideoView.setVideoSize(screenWidth, screenHeight);
+                //默认状态的适配器
+                btn_video_siwch_screen.setBackgroundResource(R.drawable.btn_video_siwch_screen_default_selector);
+                break;
+            case DEFAULT_SCREEN:
+                //改变全屏状态
+                isFullState = false;
+                int height = screenHeight;
+                int width = screenWidth;
+
+                int mVideoWidth = videoWidth;
+                int mVideoHeight = videoHeigh;
+                if (mVideoWidth * height < width * mVideoHeight) {
+                    //Log.i("@@@", "image too wide, correcting");
+                    width = height * mVideoWidth / mVideoHeight;
+                } else if (mVideoWidth * height > width * mVideoHeight) {
+                    //Log.i("@@@", "image too tall, correcting");
+                    height = width * mVideoHeight / mVideoWidth;
+                }
+                mVideoView.setVideoSize(width, height);
+                //全屏状态的适配器
+                btn_video_siwch_screen.setBackgroundResource(R.drawable.btn_video_siwch_screen_full_selector);
+                break;
+        }
+    }
+
     private final int MSG_PROGRESS = 10;
+    private final int MSG_HIDEMEDIACONTROLLER = 20;//隐藏控制栏
     private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -286,6 +365,9 @@ public class VideoPlayActivity extends AppCompatActivity {
                     //每秒更新一次
                     mHandler.removeMessages(MSG_PROGRESS);
                     mHandler.sendEmptyMessageDelayed(MSG_PROGRESS, 1000);
+                    break;
+                case MSG_HIDEMEDIACONTROLLER:
+                    setMediaControllerState(false);
                     break;
             }
         }
@@ -332,12 +414,12 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-
+            mHandler.removeMessages(MSG_HIDEMEDIACONTROLLER);
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-
+            mHandler.sendEmptyMessageDelayed(MSG_HIDEMEDIACONTROLLER, 5000);
         }
     }
 
@@ -352,12 +434,63 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-
+            mHandler.removeMessages(MSG_HIDEMEDIACONTROLLER);
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-
+            mHandler.sendEmptyMessageDelayed(MSG_HIDEMEDIACONTROLLER, 5000);
         }
+    }
+
+    class MySimpleOnGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+            //长按
+            startAndPause();
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            //双击
+            setVideoType();
+            return super.onDoubleTap(e);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            //单击
+            if (isShowMediaController) {
+                //隐藏控制面板
+                setMediaControllerState(false);
+                mHandler.removeMessages(MSG_HIDEMEDIACONTROLLER);
+            } else {
+                //展示控制面板
+                setMediaControllerState(true);
+                mHandler.sendEmptyMessageDelayed(MSG_HIDEMEDIACONTROLLER, 5000);
+            }
+            return super.onSingleTapConfirmed(e);
+        }
+    }
+
+    /**
+     * 设置媒体
+     *
+     * @param ishow
+     */
+    private void setMediaControllerState(boolean ishow) {
+        int visible = View.VISIBLE;
+        if (!ishow) {
+            visible = View.INVISIBLE;
+        }
+        media_controller.setVisibility(visible);
+        isShowMediaController = ishow;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 }
