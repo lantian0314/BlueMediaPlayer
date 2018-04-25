@@ -14,6 +14,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -52,6 +53,8 @@ public class VideoPlayActivity extends AppCompatActivity {
     Button btn_video_next;
     @BindView(R.id.btn_video_siwch_screen)
     Button btn_video_siwch_screen;
+    @BindView(R.id.btn_voice)
+    Button btn_voice;
     @BindView(R.id.tv_name)
     TextView tv_name;
     @BindView(R.id.tv_system_time)
@@ -93,6 +96,7 @@ public class VideoPlayActivity extends AppCompatActivity {
     private final int FULL_SCREEN = 10;
     private final int DEFAULT_SCREEN = 20;
     private boolean isFullState = false;
+    private boolean isMute = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -185,7 +189,7 @@ public class VideoPlayActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick({R.id.btn_video_start_pause, R.id.btn_exit, R.id.btn_video_pre, R.id.btn_video_next,R.id.btn_video_siwch_screen})
+    @OnClick({R.id.btn_video_start_pause, R.id.btn_exit, R.id.btn_video_pre, R.id.btn_video_next, R.id.btn_video_siwch_screen, R.id.btn_voice})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_video_start_pause:
@@ -202,6 +206,10 @@ public class VideoPlayActivity extends AppCompatActivity {
                 break;
             case R.id.btn_video_siwch_screen:
                 setVideoType();
+                break;
+            case R.id.btn_voice:
+                isMute = !isMute;
+                updateVoice(currentVoice, isMute);
                 break;
         }
     }
@@ -427,9 +435,13 @@ public class VideoPlayActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
-                seekbar_voice.setProgress(progress);
+                if (progress > 0) {
+                    isMute = false;
+                } else {
+                    isMute = true;
+                }
             }
+            updateVoice(progress, isMute);
         }
 
         @Override
@@ -440,6 +452,17 @@ public class VideoPlayActivity extends AppCompatActivity {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             mHandler.sendEmptyMessageDelayed(MSG_HIDEMEDIACONTROLLER, 5000);
+        }
+    }
+
+    private void updateVoice(int progress, boolean isMute) {
+        if (isMute) {
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+            seekbar_voice.setProgress(0);
+        } else {
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+            seekbar_voice.setProgress(progress);
+            currentVoice = progress;
         }
     }
 
@@ -488,9 +511,62 @@ public class VideoPlayActivity extends AppCompatActivity {
         isShowMediaController = ishow;
     }
 
+    private float startY;//起始位置
+    private float mVoice;//当前按下的音量
+    private float mscreenHeight;//当前屏幕的高
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN://手指按下
+                startY = event.getY();
+                mVoice = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                mscreenHeight = Math.max(screenHeight, screenWidth);
+                mHandler.removeMessages(MSG_HIDEMEDIACONTROLLER);//移除消息
+                break;
+            case MotionEvent.ACTION_MOVE://手指移动
+                float endY = event.getY();
+                float changeValue = startY - endY;
+                float changeVoice = (changeValue / mscreenHeight) * maxVoice;
+                float nowVoice = Math.max(Math.min((mVoice + changeVoice), 0), maxVoice);
+                if (changeVoice != 0) {
+                    isMute = false;
+                    updateVoice((int) nowVoice, isMute);
+                }
+                break;
+            case MotionEvent.ACTION_UP://手指起来
+                mHandler.sendEmptyMessageDelayed(MSG_HIDEMEDIACONTROLLER, 5000);
+                break;
+        }
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.ACTION_DOWN) {
+            updataVoiceByKeyEvent(true);
+            return true;
+        } else if (keyCode == KeyEvent.ACTION_UP) {
+            updataVoiceByKeyEvent(false);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 根据声音按键来改变声音的大小
+     *
+     * @param isDown
+     */
+    private void updataVoiceByKeyEvent(boolean isDown) {
+        if (isDown) {
+            currentVoice--;
+        } else {
+            currentVoice++;
+        }
+        updateVoice(currentVoice, false);
+        mHandler.removeMessages(MSG_HIDEMEDIACONTROLLER);
+        mHandler.sendEmptyMessageDelayed(MSG_HIDEMEDIACONTROLLER, 5000);
     }
 }
