@@ -4,4 +4,5 @@
     <string name="audio">音乐</string>
     <string name="dynamic">动态</string>
     <string name="search_default_txt">全网搜索</string>
+    <string name="playname">mediaplayer(system recommend)</string>
 </resources>

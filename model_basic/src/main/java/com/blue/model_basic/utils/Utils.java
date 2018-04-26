@@ -51,13 +51,13 @@ public class Utils {
      * @return
      */
     public boolean isNetUri(String uri) {
-        boolean reault = false;
+        boolean result = false;
         if (uri != null) {
             if (uri.toLowerCase().startsWith("http") || uri.toLowerCase().startsWith("rtsp") || uri.toLowerCase().startsWith("mms")) {
-                reault = true;
+                result = true;
             }
         }
-        return reault;
+        return result;
     }
 
 

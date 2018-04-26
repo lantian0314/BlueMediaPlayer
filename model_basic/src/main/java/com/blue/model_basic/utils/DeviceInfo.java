@@ -1,6 +1,7 @@
 package com.blue.model_basic.utils;
 
 import android.content.Context;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.util.DisplayMetrics;
 
@@ -34,5 +35,10 @@ public class DeviceInfo {
     public String getSystemTime(){
         SimpleDateFormat format=new SimpleDateFormat("HH:mm:ss");
         return format.format(new Date());
+    }
+
+    public int getVersion(){
+        int version= Build.VERSION.SDK_INT;
+        return version;
     }
 }

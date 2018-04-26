@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:background="#33000000"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:visibility="gone"
+    >
+
+    <ProgressBar
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/tv_netspeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="3dp"
+        android:gravity="center"
+        android:text="缓冲中... 30kb/s"
+        android:textColor="#ffffff"
+        android:textSize="10sp" />
+</LinearLayout>

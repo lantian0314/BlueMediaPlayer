@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -71,6 +73,12 @@ public class VideoPlayActivity extends AppCompatActivity {
     SeekBar seekbar_voice;
     @BindView(R.id.media_controller)
     RelativeLayout media_controller;
+    @BindView(R.id.ll_buffer)
+    LinearLayout ll_buffer;
+    @BindView(R.id.tv_netspeed)
+    TextView tv_netspeed;
+    @BindView(R.id.ll_loading)
+    LinearLayout ll_loading;
 
     private Uri uri;
     private ArrayList<MediaItem> mediaItems;
@@ -97,6 +105,7 @@ public class VideoPlayActivity extends AppCompatActivity {
     private final int DEFAULT_SCREEN = 20;
     private boolean isFullState = false;
     private boolean isMute = false;
+    private boolean isNetUri = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,6 +125,9 @@ public class VideoPlayActivity extends AppCompatActivity {
         seekbar_video.setOnSeekBarChangeListener(new VideoOnSeekBarChangeListener());
         seekbar_voice.setOnSeekBarChangeListener(new VoiceOnSeekBarChangeListener());
         gestureDetector = new GestureDetector(this, new MySimpleOnGestureListener());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mVideoView.setOnInfoListener(new MyOninfoListener());
+        }
     }
 
     private void setVideoData() {
@@ -136,10 +148,15 @@ public class VideoPlayActivity extends AppCompatActivity {
         if (mediaItems != null && mediaItems.size() > 0) {
             MediaItem mediaItem = mediaItems.get(position);
             tv_name.setText(mediaItem.getName());
+            isNetUri = utils.isNetUri(mediaItem.getData());
             mVideoView.setVideoPath(mediaItem.getData());
         } else if (uri != null) {
             tv_name.setText(uri.toString());
+            isNetUri = utils.isNetUri(uri.toString());
             mVideoView.setVideoURI(uri);
+        }
+        if (isNetUri) {
+            ll_loading.setVisibility(View.VISIBLE);
         }
         setButtonClickState();
         //得到音量
@@ -158,6 +175,7 @@ public class VideoPlayActivity extends AppCompatActivity {
         public void onPrepared(MediaPlayer mp) {
             videoWidth = mp.getVideoWidth();
             videoHeigh = mp.getVideoHeight();
+            ll_loading.setVisibility(View.GONE);
             setDefaultAndFullScreen(DEFAULT_SCREEN);
             mVideoView.start();
             //得到视频的总长度
@@ -235,6 +253,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             if (position < mediaItems.size()) {
                 MediaItem mediaItem = mediaItems.get(position);
                 tv_name.setText(mediaItem.getName());
+                isNetUri = utils.isNetUri(mediaItem.getData());
                 mVideoView.setVideoPath(mediaItem.getData());
                 setButtonClickState();
             }
@@ -253,6 +272,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             if (position >= 0) {
                 MediaItem mediaItem = mediaItems.get(position);
                 tv_name.setText(mediaItem.getName());
+                isNetUri = utils.isNetUri(mediaItem.getData());
                 mVideoView.setVideoPath(mediaItem.getData());
                 setButtonClickState();
             }
@@ -370,6 +390,15 @@ public class VideoPlayActivity extends AppCompatActivity {
                     seekbar_video.setProgress(currentPosition);
                     tv_current_time.setText(utils.stringForTime(currentPosition));
 
+                    //更新网络视频缓存进度
+                    if (isNetUri) {
+                        int bufferPercent = mVideoView.getBufferPercentage();//0~100
+                        int seekMax = seekbar_video.getMax();
+                        int secondaryProgress = bufferPercent * seekMax / 100;
+                        seekbar_video.setSecondaryProgress(secondaryProgress);
+                    } else {
+                        seekbar_video.setSecondaryProgress(0);
+                    }
                     //每秒更新一次
                     mHandler.removeMessages(MSG_PROGRESS);
                     mHandler.sendEmptyMessageDelayed(MSG_PROGRESS, 1000);
@@ -466,6 +495,27 @@ public class VideoPlayActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 视频卡的监听
+     */
+    class MyOninfoListener implements MediaPlayer.OnInfoListener {
+        @Override
+        public boolean onInfo(MediaPlayer mp, int what, int extra) {
+            switch (what) {
+                case MediaPlayer.MEDIA_INFO_BUFFERING_START://视频开始卡
+                    ll_buffer.setVisibility(View.VISIBLE);
+                    break;
+                case MediaPlayer.MEDIA_INFO_BUFFERING_END://结束卡
+                    ll_buffer.setVisibility(View.GONE);
+                    break;
+            }
+            return false;
+        }
+    }
+
+    /**
+     * 手势识别器的监听
+     */
     class MySimpleOnGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public void onLongPress(MotionEvent e) {

@@ -13,4 +13,11 @@
         layout="@layout/media_contoller"
         android:visibility="invisible" />
 
+    <include android:id="@+id/ll_buffer"
+    layout="@layout/buffer"
+    />
+
+    <include android:id="@+id/ll_loading"
+        layout="@layout/ll_loading"
+        />
 </RelativeLayout>
