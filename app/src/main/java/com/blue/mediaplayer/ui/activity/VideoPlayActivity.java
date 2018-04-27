@@ -75,8 +75,10 @@ public class VideoPlayActivity extends AppCompatActivity {
     RelativeLayout media_controller;
     @BindView(R.id.ll_buffer)
     LinearLayout ll_buffer;
-    @BindView(R.id.tv_netspeed)
+    @BindView(R.id.tv_buffernetspeed)
     TextView tv_netspeed;
+    @BindView(R.id.tv_loadingNetSpeed)
+    TextView tv_loadingNetSpeed;
     @BindView(R.id.ll_loading)
     LinearLayout ll_loading;
 
@@ -165,6 +167,8 @@ public class VideoPlayActivity extends AppCompatActivity {
         maxVoice = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         seekbar_voice.setMax(maxVoice);
         seekbar_voice.setProgress(currentVoice);
+        //发送网速消息
+        mHandler.sendEmptyMessage(MSG_NETSPEED);
     }
 
     /**
@@ -251,6 +255,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             //播放上一个视频
             position++;
             if (position < mediaItems.size()) {
+                ll_loading.setVisibility(View.VISIBLE);
                 MediaItem mediaItem = mediaItems.get(position);
                 tv_name.setText(mediaItem.getName());
                 isNetUri = utils.isNetUri(mediaItem.getData());
@@ -270,6 +275,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             //播放上一个视频
             position--;
             if (position >= 0) {
+                ll_loading.setVisibility(View.VISIBLE);
                 MediaItem mediaItem = mediaItems.get(position);
                 tv_name.setText(mediaItem.getName());
                 isNetUri = utils.isNetUri(mediaItem.getData());
@@ -378,6 +384,7 @@ public class VideoPlayActivity extends AppCompatActivity {
 
     private final int MSG_PROGRESS = 10;
     private final int MSG_HIDEMEDIACONTROLLER = 20;//隐藏控制栏
+    private final int MSG_NETSPEED=30;//网速
     private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -405,6 +412,14 @@ public class VideoPlayActivity extends AppCompatActivity {
                     break;
                 case MSG_HIDEMEDIACONTROLLER:
                     setMediaControllerState(false);
+                    break;
+                case MSG_NETSPEED:
+                    String netSpeed=utils.getNetSpeed(VideoPlayActivity.this);
+                    tv_loadingNetSpeed.setText("正在加载中..."+netSpeed);
+                    tv_netspeed.setText("缓冲中..."+netSpeed);
+
+                    mHandler.removeMessages(MSG_NETSPEED);
+                    mHandler.sendEmptyMessageDelayed(MSG_NETSPEED,2*1000);
                     break;
             }
         }
