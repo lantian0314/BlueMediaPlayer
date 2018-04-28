@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/model_basic/model_basic.iml" filepath="$PROJECT_DIR$/model_basic/model_basic.iml" />
       <module fileurl="file://$PROJECT_DIR$/startallplayer/startallplayer.iml" filepath="$PROJECT_DIR$/startallplayer/startallplayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vitamio/vitamio.iml" filepath="$PROJECT_DIR$/vitamio/vitamio.iml" />
     </modules>
   </component>
 </project>

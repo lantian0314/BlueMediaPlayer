@@ -1,1 +1,1 @@
-include ':app', ':model_basic', ':startallplayer'
+include ':app', ':model_basic', ':startallplayer',':vitamio'

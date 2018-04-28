@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +27,7 @@ import android.widget.Toast;
 
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.bean.MediaItem;
-import com.blue.mediaplayer.view.VideoView;
+import com.blue.mediaplayer.view.VitamioVideoView;
 import com.blue.model_basic.utils.DeviceInfo;
 import com.blue.model_basic.utils.Utils;
 
@@ -37,14 +36,16 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.Vitamio;
 
 /**
  * Created by xingyatong on 2018/4/3.
  */
 
-public class VideoPlayActivity extends AppCompatActivity {
+public class VitamioVideoPlayActivity extends AppCompatActivity {
     @BindView(R.id.vv_videoplayer)
-    VideoView mVideoView;
+    VitamioVideoView mVideoView;
     @BindView(R.id.btn_video_start_pause)
     Button btn_video_start_pause;
     @BindView(R.id.btn_exit)
@@ -112,7 +113,8 @@ public class VideoPlayActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_player);
+        Vitamio.initialize(this);//初始化Vitamio
+        setContentView(R.layout.activity_vitamiovideo_player);
         ButterKnife.bind(this);
         setVideoData();
         setClickListener();
@@ -148,15 +150,14 @@ public class VideoPlayActivity extends AppCompatActivity {
         screenWidth = metrics[0];
         screenHeight = metrics[1];
         if (mediaItems != null && mediaItems.size() > 0) {
-            checkListPlayer();
+            MediaItem mediaItem = mediaItems.get(position);
+            tv_name.setText(mediaItem.getName());
+            isNetUri = utils.isNetUri(mediaItem.getData());
+            mVideoView.setVideoPath(mediaItem.getData());
         } else if (uri != null) {
-            if (isNeedVitamioPlayer(uri.toString())) {
-                startVitamioPlayer();
-            } else {
-                tv_name.setText(uri.toString());
-                isNetUri = utils.isNetUri(uri.toString());
-                mVideoView.setVideoURI(uri);
-            }
+            tv_name.setText(uri.toString());
+            isNetUri = utils.isNetUri(uri.toString());
+            mVideoView.setVideoURI(uri);
         }
         if (isNetUri) {
             ll_loading.setVisibility(View.VISIBLE);
@@ -173,28 +174,6 @@ public class VideoPlayActivity extends AppCompatActivity {
     }
 
     /**
-     * 检查列表的播放
-     */
-    private void checkListPlayer() {
-        MediaItem mediaItem = mediaItems.get(position);
-        if (isNeedVitamioPlayer(mediaItem.getData())) {
-            startVitamioPlayer();
-        } else {
-            tv_name.setText(mediaItem.getName());
-            isNetUri = utils.isNetUri(mediaItem.getData());
-            mVideoView.setVideoPath(mediaItem.getData());
-        }
-    }
-
-    private boolean isNeedVitamioPlayer(String path) {
-        boolean isNeed = false;
-        if (path.endsWith(".avi")) {
-            isNeed = true;
-        }
-        return isNeed;
-    }
-
-    /**
      * 准备的监听事件
      */
     class onMyPrepareListener implements MediaPlayer.OnPreparedListener {
@@ -206,7 +185,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             setDefaultAndFullScreen(DEFAULT_SCREEN);
             mVideoView.start();
             //得到视频的总长度
-            int duration = mVideoView.getDuration();
+            int duration = (int) mVideoView.getDuration();
             seekbar_video.setMax(duration);
             tv_duration.setText(utils.stringForTime(duration));
 
@@ -221,37 +200,16 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
-            //Toast.makeText(VideoPlayActivity.this, "播放出错", Toast.LENGTH_SHORT).show();
-            //播放出错，调用万能播放器
-            startVitamioPlayer();
+            //Toast.makeText(VitamioVideoPlayActivity.this, "播放出错", Toast.LENGTH_SHORT).show();
             return true;
         }
-    }
-
-    /**
-     * 1.把数据原封不变的传入
-     * 2.关闭系统播放器
-     */
-    private void startVitamioPlayer() {
-        Toast.makeText(this, "使用万能播放器播放", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, VitamioVideoPlayActivity.class);
-        if (mediaItems != null && mediaItems.size() > 0) {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("videolist", mediaItems);
-            intent.putExtras(bundle);
-            intent.putExtra("position", position);
-        } else if (uri != null) {
-            intent.setData(uri);
-        }
-        startActivity(intent);
-        finish();
     }
 
     class onMyCompletionListener implements MediaPlayer.OnCompletionListener {
 
         @Override
         public void onCompletion(MediaPlayer mp) {
-            Toast.makeText(VideoPlayActivity.this, "播放完成", Toast.LENGTH_SHORT).show();
+            Toast.makeText(VitamioVideoPlayActivity.this, "播放完成", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -300,7 +258,10 @@ public class VideoPlayActivity extends AppCompatActivity {
             position++;
             if (position < mediaItems.size()) {
                 ll_loading.setVisibility(View.VISIBLE);
-                checkListPlayer();
+                MediaItem mediaItem = mediaItems.get(position);
+                tv_name.setText(mediaItem.getName());
+                isNetUri = utils.isNetUri(mediaItem.getData());
+                mVideoView.setVideoPath(mediaItem.getData());
                 setButtonClickState();
             }
         } else if (uri != null) {
@@ -317,7 +278,10 @@ public class VideoPlayActivity extends AppCompatActivity {
             position--;
             if (position >= 0) {
                 ll_loading.setVisibility(View.VISIBLE);
-                checkListPlayer();
+                MediaItem mediaItem = mediaItems.get(position);
+                tv_name.setText(mediaItem.getName());
+                isNetUri = utils.isNetUri(mediaItem.getData());
+                mVideoView.setVideoPath(mediaItem.getData());
                 setButtonClickState();
             }
         } else if (uri != null) {
@@ -394,7 +358,7 @@ public class VideoPlayActivity extends AppCompatActivity {
             case FULL_SCREEN:
                 //改变全屏状态
                 isFullState = true;
-                mVideoView.setVideoSize(screenWidth, screenHeight);
+                //mVideoView.setVideoSize(screenWidth, screenHeight);
                 //默认状态的适配器
                 btn_video_siwch_screen.setBackgroundResource(R.drawable.btn_video_siwch_screen_default_selector);
                 break;
@@ -431,7 +395,7 @@ public class VideoPlayActivity extends AppCompatActivity {
                 case MSG_PROGRESS:
                     tv_system_time.setText(deviceInfo.getSystemTime());//更新系统时间
                     //得到当前的播放进度，更新
-                    int currentPosition = mVideoView.getCurrentPosition();
+                    int currentPosition = (int) mVideoView.getCurrentPosition();
                     seekbar_video.setProgress(currentPosition);
                     tv_current_time.setText(utils.stringForTime(currentPosition));
 
@@ -452,7 +416,7 @@ public class VideoPlayActivity extends AppCompatActivity {
                     setMediaControllerState(false);
                     break;
                 case MSG_NETSPEED:
-                    String netSpeed = utils.getNetSpeed(VideoPlayActivity.this);
+                    String netSpeed = utils.getNetSpeed(VitamioVideoPlayActivity.this);
                     tv_loadingNetSpeed.setText("正在加载中..." + netSpeed);
                     tv_netspeed.setText("缓冲中..." + netSpeed);
 
