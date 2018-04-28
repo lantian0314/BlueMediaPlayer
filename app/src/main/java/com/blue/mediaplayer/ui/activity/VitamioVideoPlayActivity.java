@@ -2,6 +2,7 @@ package com.blue.mediaplayer.ui.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -12,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -58,6 +60,8 @@ public class VitamioVideoPlayActivity extends AppCompatActivity {
     Button btn_video_siwch_screen;
     @BindView(R.id.btn_voice)
     Button btn_voice;
+    @BindView(R.id.btn_swich_player)
+    Button btn_swich_player;
     @BindView(R.id.tv_name)
     TextView tv_name;
     @BindView(R.id.tv_system_time)
@@ -201,8 +205,25 @@ public class VitamioVideoPlayActivity extends AppCompatActivity {
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
             //Toast.makeText(VitamioVideoPlayActivity.this, "播放出错", Toast.LENGTH_SHORT).show();
+            showErrorDialog();
             return true;
         }
+    }
+
+    /**
+     * 展示错误对话框
+     */
+    private void showErrorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("提示");
+        builder.setMessage("抱歉！无法播放该视频");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        builder.show();
     }
 
     class onMyCompletionListener implements MediaPlayer.OnCompletionListener {
@@ -213,7 +234,8 @@ public class VitamioVideoPlayActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick({R.id.btn_video_start_pause, R.id.btn_exit, R.id.btn_video_pre, R.id.btn_video_next, R.id.btn_video_siwch_screen, R.id.btn_voice})
+    @OnClick({R.id.btn_video_start_pause, R.id.btn_exit, R.id.btn_video_pre, R.id.btn_video_next,
+            R.id.btn_video_siwch_screen, R.id.btn_voice, R.id.btn_swich_player})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_video_start_pause:
@@ -235,7 +257,46 @@ public class VitamioVideoPlayActivity extends AppCompatActivity {
                 isMute = !isMute;
                 updateVoice(currentVoice, isMute);
                 break;
+            case R.id.btn_swich_player:
+                showSwitchPlayerDialog();
+                break;
         }
+    }
+
+    /**
+     * 展示转换播放器的对话框
+     */
+    private void showSwitchPlayerDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("万能播放器提示");
+        builder.setMessage("点击确定则切换系统播放器哦！");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startSystemPlayer();
+            }
+        });
+        builder.setNegativeButton("取消", null);
+        builder.show();
+    }
+
+    /**
+     * 1.把数据原封不变的传入
+     * 2.关闭系统播放器
+     */
+    private void startSystemPlayer() {
+        Toast.makeText(this, "使用系统播放器播放", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, VideoPlayActivity.class);
+        if (mediaItems != null && mediaItems.size() > 0) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("videolist", mediaItems);
+            intent.putExtras(bundle);
+            intent.putExtra("position", position);
+        } else if (uri != null) {
+            intent.setData(uri);
+        }
+        startActivity(intent);
+        finish();
     }
 
     /**

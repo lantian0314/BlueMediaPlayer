@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/video_recycler"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
-
-    <TextView
-    android:id="@+id/tv_nomedia"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="没有发现视频..."
-    android:textColor="#000000"
-    android:textSize="18sp"
-    android:visibility="gone" />
-
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
-</FrameLayout>
+        android:background="#11000000"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_localVideo"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_weight="1"
+            android:background="#ff3097fd"
+            android:text="本地视频" />
+
+        <Button
+            android:id="@+id/btn_netlocal"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_weight="1"
+            android:background="#11000000"
+            android:text="网络视频" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/ll_localvideo"
+        layout="@layout/fl_localvideo" />
+
+    <include
+        android:visibility="gone"
+        android:id="@+id/ll_netvideo"
+        layout="@layout/fl_netvideo" />
+</LinearLayout>

@@ -2,6 +2,7 @@ package com.blue.mediaplayer.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,14 +26,29 @@ import com.blue.mediaplayer.ui.activity.VideoPlayActivity;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by xingyatong on 2018/4/2.
  */
 
 public class VideoFragment extends Fragment implements VideoView {
-    private RecyclerView mRecyclerView;
-    private TextView tv_nomedia;
-    private ProgressBar pb_loading;
+    @BindView(R.id.video_recycler)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.tv_nomedia)
+    TextView tv_nomedia;
+    @BindView(R.id.pb_loading)
+    ProgressBar pb_loading;
+    @BindView(R.id.ll_localvideo)
+    FrameLayout ll_localvideo;
+    @BindView(R.id.ll_netvideo)
+    FrameLayout ll_netvideo;
+    @BindView(R.id.btn_localVideo)
+    Button btn_localVideo;
+    @BindView(R.id.btn_netlocal)
+    Button btn_netlocal;
+    boolean isShowlocalView = true;
 
 
     private Context mContext;
@@ -49,10 +68,14 @@ public class VideoFragment extends Fragment implements VideoView {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_video, container, false);
-        mRecyclerView = view.findViewById(R.id.video_recycler);
-        tv_nomedia = view.findViewById(R.id.tv_nomedia);
-        pb_loading = view.findViewById(R.id.pb_loading);
+        ButterKnife.bind(this, view);
+        setClickListener();
         return view;
+    }
+
+    private void setClickListener() {
+        btn_netlocal.setOnClickListener(new MyClickListener());
+        btn_localVideo.setOnClickListener(new MyClickListener());
     }
 
     @Override
@@ -104,5 +127,23 @@ public class VideoFragment extends Fragment implements VideoView {
             videoPresenter.detechView();
         }
         super.onDestroy();
+    }
+
+    class MyClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            isShowlocalView = !isShowlocalView;
+            if (isShowlocalView) {
+                ll_localvideo.setVisibility(View.VISIBLE);
+                ll_netvideo.setVisibility(View.GONE);
+                btn_localVideo.setBackgroundColor(Color.parseColor("#ff3097fd"));
+                btn_netlocal.setBackgroundColor(Color.parseColor("#11000000"));
+            } else {
+                ll_localvideo.setVisibility(View.GONE);
+                ll_netvideo.setVisibility(View.VISIBLE);
+                btn_netlocal.setBackgroundColor(Color.parseColor("#ff3097fd"));
+                btn_localVideo.setBackgroundColor(Color.parseColor("#11000000"));
+            }
+        }
     }
 }
