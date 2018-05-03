@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 
 import com.blue.mediaplayer.R;
+import com.blue.mediaplayer.mvp.model.NetVideoModel;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -27,6 +28,7 @@ public class SplashActivity extends AppCompatActivity {
                 startMainActivity();
             }
         }, 2000);
+        new NetVideoModel().getNetVideoList(null);
     }
 
     /**

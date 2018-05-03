@@ -697,4 +697,10 @@ public class VitamioVideoPlayActivity extends AppCompatActivity {
         mHandler.removeMessages(MSG_HIDEMEDIACONTROLLER);
         mHandler.sendEmptyMessageDelayed(MSG_HIDEMEDIACONTROLLER, 5000);
     }
+
+    @Override
+    protected void onDestroy() {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
 }

@@ -10,4 +10,6 @@ import java.util.ArrayList;
 
 public interface VideoView {
     void videoList(ArrayList<MediaItem> mediaItemList);
+
+    void netvideoList(ArrayList<MediaItem> mediaItemList);
 }
