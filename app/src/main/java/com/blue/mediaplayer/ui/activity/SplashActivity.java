@@ -28,7 +28,6 @@ public class SplashActivity extends AppCompatActivity {
                 startMainActivity();
             }
         }, 2000);
-        new NetVideoModel().getNetVideoList(null);
     }
 
     /**

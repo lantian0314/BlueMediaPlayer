@@ -41,7 +41,7 @@ public class VideoPresenter extends BasePresenter<VideoView> {
 
     public void getNetVideoList() {
         videoView = getView();
-        netVideoModel.getNetVideoList(new NetVideoModel.netVideoDataInterface() {
+        netVideoModel.getNetVideoList(mContext,new NetVideoModel.netVideoDataInterface() {
             @Override
             public void getDataList(ArrayList<MediaItem> mediaItemList) {
                 if (videoView != null) {
