@@ -85,9 +85,9 @@ public class NetVideoModel {
             JSONArray tempArray = jsonObject.optJSONArray("trailers");
             if (tempArray != null && tempArray.length() > 0) {
                 mediaItemList = new ArrayList<>();
+                Gson gson = new Gson();
                 for (int i = 0; i < tempArray.length(); i++) {
                     JSONObject tempJson = tempArray.optJSONObject(i);
-                    Gson gson = new Gson();
                     NetMediaItem netMediaItem = gson.fromJson(tempJson.toString(), NetMediaItem.class);
                     MediaItem mediaItem = new MediaItem();
                     mediaItem.setData(netMediaItem.getUrl());
