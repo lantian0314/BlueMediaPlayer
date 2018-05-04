@@ -26,12 +26,14 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
     private Context mContext;
     private List<MediaItem> mediaItemList;
     private Utils utils;
+    private boolean isVideo = false;
 
     private onMyClickListener onMyClickListener;
 
-    public MVideoRecyclerAdapter(Context context, List<MediaItem> mediaItemList) {
+    public MVideoRecyclerAdapter(Context context, List<MediaItem> mediaItemList, boolean isVideo) {
         this.mContext = context;
         this.mediaItemList = mediaItemList;
+        this.isVideo=isVideo;
         utils = new Utils();
     }
 
@@ -49,8 +51,8 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onMyClickListener!=null){
-                    onMyClickListener.onItemClick(holder.itemView,position);
+                if (onMyClickListener != null) {
+                    onMyClickListener.onItemClick(holder.itemView, position);
                 }
             }
         });
@@ -80,11 +82,14 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
             tv_name.setText(mediaItem.getName());
             tv_time.setText(utils.stringForTime((int) mediaItem.getDuration()));
             tv_size.setText(Formatter.formatFileSize(mContext, mediaItem.getSize()));
+            if (!isVideo){
+                iv_icon.setImageResource(R.drawable.music_default_bg);
+            }
         }
     }
 
     public interface onMyClickListener {
-        void onItemClick(View view,int position);
+        void onItemClick(View view, int position);
     }
 
     public void setMyClickListener(onMyClickListener onMyClickListener) {

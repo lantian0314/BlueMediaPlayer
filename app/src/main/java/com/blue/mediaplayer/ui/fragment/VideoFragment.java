@@ -91,7 +91,7 @@ public class VideoFragment extends Fragment implements VideoView {
         if (mediaItemList != null && mediaItemList.size() > 0) {
             this.mediaItemList = mediaItemList;
             //设置适配器
-            MVideoRecyclerAdapter mVideoRecyclerAdapter = new MVideoRecyclerAdapter(mContext, mediaItemList);
+            MVideoRecyclerAdapter mVideoRecyclerAdapter = new MVideoRecyclerAdapter(mContext, mediaItemList,true);
             //设置监听
             mVideoRecyclerAdapter.setMyClickListener(new recyclerClickListener());
             mRecyclerView.setAdapter(mVideoRecyclerAdapter);

@@ -35,8 +35,6 @@ public class NetVideoModel {
         String result = ShareUtils.getInstance(context).getString(Constants.NET_URL);
         if (!TextUtils.isEmpty(result)) {
             parserJson(result);
-            //回调得到的数据
-            EventBus.getDefault().post(new MessageEvent());
         }
         new Thread() {
             @Override
@@ -56,8 +54,6 @@ public class NetVideoModel {
                                 if (!TextUtils.isEmpty(result)) {
                                     ShareUtils.getInstance(context).putString(Constants.NET_URL, result);
                                     parserJson(result);
-                                    //回调得到的数据
-                                    EventBus.getDefault().post(new MessageEvent());
                                 }
                             } catch (Exception e) {
 
@@ -98,6 +94,8 @@ public class NetVideoModel {
                     mediaItemList.add(mediaItem);
                 }
             }
+            //回调得到的数据
+            EventBus.getDefault().post(new MessageEvent());
         } catch (Exception e) {
 
         }
