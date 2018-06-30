@@ -2,7 +2,6 @@ package com.blue.mediaplayer.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;

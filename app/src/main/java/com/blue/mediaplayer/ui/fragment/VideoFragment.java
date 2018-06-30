@@ -91,7 +91,7 @@ public class VideoFragment extends Fragment implements VideoView {
         if (mediaItemList != null && mediaItemList.size() > 0) {
             this.mediaItemList = mediaItemList;
             //设置适配器
-            MVideoRecyclerAdapter mVideoRecyclerAdapter = new MVideoRecyclerAdapter(mContext, mediaItemList,true);
+            MVideoRecyclerAdapter mVideoRecyclerAdapter = new MVideoRecyclerAdapter(mContext, mediaItemList, true);
             //设置监听
             mVideoRecyclerAdapter.setMyClickListener(new recyclerClickListener());
             mRecyclerView.setAdapter(mVideoRecyclerAdapter);
@@ -99,6 +99,7 @@ public class VideoFragment extends Fragment implements VideoView {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
             //设置布局管理器
             mRecyclerView.setLayoutManager(linearLayoutManager);
+            mVideoRecyclerAdapter.notifyDataSetChanged();
             //把文本隐藏
             tv_nomedia.setVisibility(View.GONE);
         } else {
@@ -133,7 +134,7 @@ public class VideoFragment extends Fragment implements VideoView {
     }
 
     class recyclerClickListener implements MVideoRecyclerAdapter.onMyClickListener
-            ,MNetVideoRecyclerAdapter.onMyClickListener {
+            , MNetVideoRecyclerAdapter.onMyClickListener {
         @Override
         public void onItemClick(View view, int position) {
             //Toast.makeText(mContext, "点击" + position, Toast.LENGTH_SHORT).show();

@@ -1,7 +1,12 @@
 package com.blue.mediaplayer.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +38,7 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
     public MVideoRecyclerAdapter(Context context, List<MediaItem> mediaItemList, boolean isVideo) {
         this.mContext = context;
         this.mediaItemList = mediaItemList;
-        this.isVideo=isVideo;
+        this.isVideo = isVideo;
         utils = new Utils();
     }
 
@@ -82,8 +87,12 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
             tv_name.setText(mediaItem.getName());
             tv_time.setText(utils.stringForTime((int) mediaItem.getDuration()));
             tv_size.setText(Formatter.formatFileSize(mContext, mediaItem.getSize()));
-            if (!isVideo){
+            if (!isVideo) {
                 iv_icon.setImageResource(R.drawable.music_default_bg);
+            }
+            if (!TextUtils.isEmpty(mediaItem.getData())) {
+                Bitmap bitmap = getVideoThumbnail(mediaItem.getData(), 60, 60, MediaStore.Images.Thumbnails.MICRO_KIND);
+                iv_icon.setImageBitmap(bitmap);
             }
         }
     }
@@ -98,4 +107,28 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
         }
     }
 
+
+    /**
+     * 获取视频文件的缩略图
+     *
+     * @param videoPath
+     * @param width
+     * @param height
+     * @param kind
+     * @return
+     */
+    private Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
+        Bitmap bitmap = null;
+        try {
+            // 获取视频的缩略图
+            bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
+            bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
+                    ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            if (bitmap == null) {
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.video_default_icon);
+            }
+        } catch (Exception e) {
+        }
+        return bitmap;
+    }
 }

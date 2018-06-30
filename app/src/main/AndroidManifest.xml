@@ -238,6 +238,8 @@
             android:name=".ui.activity.VitamioVideoPlayActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:screenOrientation="landscape" />
+
+        <activity android:name=".ui.activity.AudioPlayActivity"/>
         <!-- Don't forgot InitActivity -->
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"
