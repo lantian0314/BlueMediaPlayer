@@ -85,6 +85,17 @@ public class VideoFragment extends Fragment implements VideoView {
         EventBus.getDefault().register(this);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -239,6 +250,12 @@ public class VideoFragment extends Fragment implements VideoView {
                     mediaItemList.remove(position);
                     mVideoRecyclerAdapter.notifyDataSetChanged();
                     videoPresenter.deleteDbVideo(path);//删除数据库文件
+                }
+            });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
                 }
             });
             AlertDialog alertDialog = builder.create();
