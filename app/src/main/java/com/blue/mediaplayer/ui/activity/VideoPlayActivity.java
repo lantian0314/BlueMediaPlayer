@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.mvp.model.VideoModel;
 import com.blue.mediaplayer.view.VideoView;
 import com.blue.model_basic.utils.DeviceInfo;
 import com.blue.model_basic.utils.Utils;
@@ -213,8 +214,9 @@ public class VideoPlayActivity extends AppCompatActivity {
             int duration = mVideoView.getDuration();
             seekbar_video.setMax(duration);
             tv_duration.setText(utils.stringForTime(duration));
-
             mHandler.sendEmptyMessage(MSG_PROGRESS);
+            String path = mediaItems.get(position).getData();
+            new VideoModel(getApplicationContext()).UpdateDbVideo(path, duration);
         }
     }
 

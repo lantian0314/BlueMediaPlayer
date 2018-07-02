@@ -1,6 +1,9 @@
 package com.blue.mediaplayer.ui.fragment;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ import com.blue.mediaplayer.mvp.view.VideoView;
 import com.blue.mediaplayer.ui.activity.VideoPlayActivity;
 import com.blue.model_basic.utils.LogUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -59,15 +63,16 @@ public class VideoFragment extends Fragment implements VideoView {
     boolean isShowlocalView = true;
 
 
-    private Context mContext;
+    private Activity mContext;
     private ArrayList<MediaItem> mediaItemList;
+    private ArrayList<MediaItem> NetmediaItemList;
     private VideoPresenter videoPresenter;
     private MVideoRecyclerAdapter mVideoRecyclerAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getActivity().getApplicationContext();
+        mContext = getActivity();
         videoPresenter = new VideoPresenter(mContext);
         videoPresenter.bindView(VideoFragment.this);
         videoPresenter.getVidoList();
@@ -125,9 +130,9 @@ public class VideoFragment extends Fragment implements VideoView {
     @Override
     public void netvideoList(ArrayList<MediaItem> mediaItemList) {
         if (mediaItemList != null && mediaItemList.size() > 0) {
-            this.mediaItemList = mediaItemList;
+            this.NetmediaItemList = mediaItemList;
             //设置适配器
-            MNetVideoRecyclerAdapter MNetVideoRecyclerAdapter = new MNetVideoRecyclerAdapter(mContext, mediaItemList);
+            MNetVideoRecyclerAdapter MNetVideoRecyclerAdapter = new MNetVideoRecyclerAdapter(mContext, NetmediaItemList);
             //设置监听
             MNetVideoRecyclerAdapter.setMyClickListener(new recyclerClickListener());
             mNetRecyclerView.setAdapter(MNetVideoRecyclerAdapter);
@@ -164,6 +169,11 @@ public class VideoFragment extends Fragment implements VideoView {
             intent.putExtra("position", position);
             mContext.startActivity(intent);
         }
+
+        @Override
+        public void onItemLongClick(View view, int position) {
+            openDialog(position);
+        }
     }
 
     @Override
@@ -191,4 +201,38 @@ public class VideoFragment extends Fragment implements VideoView {
             }
         }
     }
+
+    public void openDialog(final int position) {
+        try {
+            final MediaItem mediaItem = mediaItemList.get(position);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("删除文件");
+            builder.setMessage("你确定要删除文件 :" + mediaItem.getName() + " 吗？");
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String path = mediaItem.getData();
+                    deleteFile(path);
+                    deleteFile(mediaItem.getImageUrl());//删除icon
+                    mediaItemList.remove(position);
+                    mVideoRecyclerAdapter.notifyDataSetChanged();
+                    videoPresenter.deleteDbVideo(path);//删除数据库文件
+                }
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setCancelable(false);//对话框和返回键都不起作用
+            alertDialog.show();
+        } catch (Exception e) {
+            LogUtil.e(e);
+        }
+    }
+
+    private void deleteFile(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+
 }

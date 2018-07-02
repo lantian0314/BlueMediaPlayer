@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import com.blue.mediaplayer.bean.MediaItem;
 import com.blue.mediaplayer.utils.FileUtils;
 import com.blue.mediaplayer.utils.MimeTypes;
+import com.blue.model_basic.utils.LogUtil;
 
 
 import java.io.File;
@@ -106,15 +107,8 @@ public class VideoModel {
                         mediaItem.setData(file.getPath());
                         mediaItem.setSize(file.length());
                         mediaItem.setLastModifiedTime(file.lastModified());
-                        String path = file.getPath();
-                        Bitmap bitmap = FileUtils.getVideoThumbnail(mContext, mediaItem.getData(), 60, 60, MediaStore.Images.Thumbnails.MICRO_KIND);
-                        if (bitmap != null) {
-                            int index = path.lastIndexOf("/");
-                            String savePath = path.substring(0, index);
-                            String saveName = path.substring(index + 1, path.length()) + ".jpg";
-                            mediaItem.setImageUrl(savePath + File.separator + saveName);
-                            FileUtils.saveBitmap(savePath, saveName, bitmap);
-                        }
+                        updateVideoIcon(file, mediaItem);
+                        updateVideDuration(mediaItem);
                         MediaItem.save(mediaItem);
                         mediaItemList.add(mediaItem);
                     }
@@ -124,6 +118,43 @@ public class VideoModel {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 更新视频的播放总时长
+     *
+     * @param mediaItem
+     */
+    private void updateVideDuration(MediaItem mediaItem) {
+        List<MediaItem> updateList = MediaItem.find(MediaItem.class, "data=?", mediaItem.getData());
+        if (updateList != null && updateList.size() > 0) {
+            for (int i = 0; i < updateList.size(); i++) {
+                MediaItem tempMedia = updateList.get(i);
+                mediaItem.setDuration(tempMedia.getDuration());
+            }
+        }
+    }
+
+    /**
+     * 更新视频的ICon
+     *
+     * @param file
+     * @param mediaItem
+     */
+    private void updateVideoIcon(File file, MediaItem mediaItem) {
+        try {
+            String path = file.getPath();
+            Bitmap bitmap = FileUtils.getVideoThumbnail(mContext, mediaItem.getData(), 60, 60, MediaStore.Images.Thumbnails.MICRO_KIND);
+            if (bitmap != null) {
+                int index = path.lastIndexOf("/");
+                String savePath = FileUtils.getSdcardRootPath() + File.separator + "Image_Icon";
+                String saveName = path.substring(index + 1, path.length()) + ".jpg";
+                mediaItem.setImageUrl(savePath + File.separator + saveName);
+                FileUtils.saveBitmap(savePath, saveName, bitmap);
+            }
+        } catch (Exception e) {
+            LogUtil.e(e);
         }
     }
 
@@ -146,4 +177,34 @@ public class VideoModel {
             }
         }
     };
+
+    /**
+     * 删除本地数据库存储的文件
+     *
+     * @param path
+     */
+    public void deleteDbVideo(String path) {
+        List<MediaItem> deleteList = MediaItem.find(MediaItem.class, "data=?", path);
+        if (deleteList != null && deleteList.size() > 0) {
+            for (int i = 0; i < deleteList.size(); i++) {
+                deleteList.get(i).delete();
+            }
+        }
+    }
+
+    /**
+     * 删除本地数据库存储的文件
+     *
+     * @param path
+     */
+    public void UpdateDbVideo(String path, long duration) {
+        List<MediaItem> updateList = MediaItem.find(MediaItem.class, "data=?", path);
+        if (updateList != null && updateList.size() > 0) {
+            for (int i = 0; i < updateList.size(); i++) {
+                MediaItem mediaItem = updateList.get(i);
+                mediaItem.setDuration(duration);
+                mediaItem.save();
+            }
+        }
+    }
 }

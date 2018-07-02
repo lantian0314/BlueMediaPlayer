@@ -50,4 +50,8 @@ public class VideoPresenter extends BasePresenter<VideoView> {
             }
         });
     }
+
+    public void deleteDbVideo(String path){
+        videoModel.deleteDbVideo(path);
+    }
 }

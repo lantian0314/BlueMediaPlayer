@@ -142,6 +142,11 @@ public class AudioFragment extends Fragment implements VideoView {
             intent.putExtra("position", position);
             mContext.startActivity(intent);
         }
+
+        @Override
+        public void onItemLongClick(View view, int position) {
+
+        }
     }
 
     @Override

@@ -62,6 +62,15 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
                 }
             }
         });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (onMyClickListener != null) {
+                    onMyClickListener.onItemLongClick(holder.itemView, position);
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -99,9 +108,17 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
 
     public interface onMyClickListener {
         void onItemClick(View view, int position);
+
+        void onItemLongClick(View view, int position);
     }
 
     public void setMyClickListener(onMyClickListener onMyClickListener) {
+        if (onMyClickListener != null) {
+            this.onMyClickListener = onMyClickListener;
+        }
+    }
+
+    public void setMyLongClick(onMyClickListener onMyClickListener) {
         if (onMyClickListener != null) {
             this.onMyClickListener = onMyClickListener;
         }

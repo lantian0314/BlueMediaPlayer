@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.mvp.model.VideoModel;
 import com.blue.mediaplayer.view.VitamioVideoView;
 import com.blue.model_basic.utils.DeviceInfo;
 import com.blue.model_basic.utils.Utils;
@@ -194,6 +195,8 @@ public class VitamioVideoPlayActivity extends AppCompatActivity {
             tv_duration.setText(utils.stringForTime(duration));
 
             mHandler.sendEmptyMessage(MSG_PROGRESS);
+            String path = mediaItems.get(position).getData();
+            new VideoModel(getApplicationContext()).UpdateDbVideo(path, duration);
         }
     }
 
