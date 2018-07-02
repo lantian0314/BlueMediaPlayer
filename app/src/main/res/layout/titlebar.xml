@@ -5,27 +5,28 @@
     android:background="#ff3097fd"
     android:gravity="center_vertical"
     android:orientation="horizontal">
-    
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:src="@drawable/ic_topbanner_logo"
-        />
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/tv_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/search_default_txt"
-        android:layout_weight="1"
-        android:textSize="14sp"
-        android:clickable="true"
-        android:background="@drawable/tv_search_bg_selector"
         android:layout_marginLeft="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/tv_search_bg_selector"
+        android:clickable="true"
         android:drawableLeft="@drawable/tv_search_drawable_selector"
         android:drawablePadding="3dp"
+        android:text="@string/search_default_txt"
         android:textColor="@drawable/tv_search_textcolor_selector"
-        />
+        android:textSize="14sp" />
+
     <RelativeLayout
         android:id="@+id/rl_game"
         android:layout_width="wrap_content"
@@ -50,9 +51,9 @@
 
     <ImageView
         android:id="@+id/iv_record"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="8dp"
         android:src="@drawable/ic_topbanner_record" />
 </com.blue.mediaplayer.view.TitleBar>

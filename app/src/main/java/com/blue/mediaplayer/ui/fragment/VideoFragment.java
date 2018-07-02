@@ -23,10 +23,15 @@ import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.adapter.MNetVideoRecyclerAdapter;
 import com.blue.mediaplayer.adapter.MVideoRecyclerAdapter;
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.bean.MessageEvent;
 import com.blue.mediaplayer.mvp.persenter.VideoPresenter;
 import com.blue.mediaplayer.mvp.view.VideoView;
 import com.blue.mediaplayer.ui.activity.VideoPlayActivity;
 import com.blue.model_basic.utils.LogUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -77,6 +82,7 @@ public class VideoFragment extends Fragment implements VideoView {
         videoPresenter.bindView(VideoFragment.this);
         videoPresenter.getVidoList();
         videoPresenter.getNetVideoList();
+        EventBus.getDefault().register(this);
     }
 
     @Nullable
@@ -167,13 +173,29 @@ public class VideoFragment extends Fragment implements VideoView {
             bundle.putSerializable("videolist", mediaItemList);
             intent.putExtras(bundle);
             intent.putExtra("position", position);
-            mContext.startActivity(intent);
+            mContext.startActivityForResult(intent, 1);
         }
 
         @Override
         public void onItemLongClick(View view, int position) {
             openDialog(position);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            mVideoRecyclerAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateList(MessageEvent messageEvent) {
+        int position = messageEvent.getPosition();
+        long duration = messageEvent.getDuration();
+        mediaItemList.get(position).setDuration(duration);
+        mVideoRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override

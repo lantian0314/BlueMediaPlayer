@@ -88,21 +88,9 @@ public class LogUtil {
     }
 
     public static void e(String content) {
-        if (!allowE) {
-            return;
-        }
 
-        StackTraceElement caller = getCallerStackTraceElement();
         String tag = generateTag();
-
-        if (customLogger != null) {
-            customLogger.e(tag, content);
-        } else {
-            Log.e(tag, content);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, content);
-        }
+        Log.e(tag, content);
     }
 
     public static void e(Throwable e) {
@@ -111,32 +99,9 @@ public class LogUtil {
         }
 
         String tag = generateTag();
-        if (customLogger != null) {
-            customLogger.e(tag, "error", e);
-        } else {
-            Log.e(tag, e.getMessage(), e);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, e.getMessage());
-        }
+        Log.e(tag, e.getMessage(), e);
     }
 
-    public static void e(String content, Throwable e) {
-        if (!allowE) {
-            return;
-        }
-
-        String tag = generateTag();
-
-        if (customLogger != null) {
-            customLogger.e(tag, content, e);
-        } else {
-            Log.e(tag, content, e);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, e.getMessage());
-        }
-    }
 
     public static void i(String content) {
         if (!allowI) {
@@ -190,9 +155,6 @@ public class LogUtil {
     }
 
 
-    private static StackTraceElement getCallerStackTraceElement() {
-        return Thread.currentThread().getStackTrace()[4];
-    }
 
     public static void point(String path, String tag, String msg) {
         if (isSDAva()) {

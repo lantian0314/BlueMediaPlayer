@@ -6,4 +6,23 @@ package com.blue.mediaplayer.bean;
 
 public class MessageEvent {
 
+    private int position;
+
+    private long duration;
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
 }

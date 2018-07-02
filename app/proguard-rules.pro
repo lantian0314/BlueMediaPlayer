@@ -173,9 +173,13 @@
     @butterknife.* <methods>;
 }
 
+-keep class io.vov.utils.** { *; }
+-keep class io.vov.vitamio.** { *; }
+
 #不混淆自己的包
 
 -keep class com.blue.mediaplayer.mvp.** { * ;}
+-keep class com.blue.mediaplayer.ui.** { * ;}
 
 #如果不想混淆JavaBean类即实体类不被混淆
 #-keep class com.stonebox.smartcleaner.model.** { *; }

@@ -30,10 +30,13 @@ import android.widget.Toast;
 
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.bean.MessageEvent;
 import com.blue.mediaplayer.mvp.model.VideoModel;
 import com.blue.mediaplayer.view.VideoView;
 import com.blue.model_basic.utils.DeviceInfo;
 import com.blue.model_basic.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -217,6 +220,11 @@ public class VideoPlayActivity extends AppCompatActivity {
             mHandler.sendEmptyMessage(MSG_PROGRESS);
             String path = mediaItems.get(position).getData();
             new VideoModel(getApplicationContext()).UpdateDbVideo(path, duration);
+
+            MessageEvent messageEvent = new MessageEvent();
+            messageEvent.setDuration(duration);
+            messageEvent.setPosition(position);
+            EventBus.getDefault().post(messageEvent);
         }
     }
 
