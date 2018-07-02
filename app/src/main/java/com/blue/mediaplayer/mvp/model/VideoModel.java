@@ -1,16 +1,21 @@
 package com.blue.mediaplayer.mvp.model;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.MediaStore;
+
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.utils.FileUtils;
 import com.blue.mediaplayer.utils.MimeTypes;
 
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xingyatong on 2018/4/2.
@@ -18,10 +23,11 @@ import java.util.ArrayList;
 
 public class VideoModel {
     private ArrayList<MediaItem> mediaItemList = null;
+    private ArrayList<MediaItem> localmediaItemList = null;
     private Context mContext;
     private videoDataInterface mVideoDataInterface;
 
-    private final int SCAN_LEVEL = 5;//扫描文件的深度
+    private final int SCAN_LEVEL = 8;//扫描文件的深度
 
 
     public VideoModel(Context context) {
@@ -35,15 +41,26 @@ public class VideoModel {
             public void run() {
                 super.run();
                 mediaItemList = new ArrayList<>();
+                localmediaItemList = new ArrayList<>();
+                querlMediaDb();
                 File externalDir = Environment.getExternalStorageDirectory();
                 if (externalDir != null) {
                     travelPath(externalDir, 0);
+                    mHandler.sendEmptyMessage(MSG_CURRENTMEDIA);
                 }
                 //queryDb();
-                mHandler.sendEmptyMessage(10);
             }
 
         }.start();
+    }
+
+    private void querlMediaDb() {
+        List<MediaItem> mediaItemList = MediaItem.listAll(MediaItem.class);
+        if (mediaItemList != null && mediaItemList.size() > 0) {
+            localmediaItemList.addAll(mediaItemList);
+            mHandler.sendEmptyMessage(MSG_LOCALDB);
+        }
+
     }
 
 //    private void queryDb() {
@@ -83,12 +100,22 @@ public class VideoModel {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
-                    MediaItem mediaItem = null;
                     if (MimeTypes.isVideo(file)) {
-                        mediaItem = new MediaItem();
+                        MediaItem mediaItem = new MediaItem();
                         mediaItem.setName(file.getName());
                         mediaItem.setData(file.getPath());
                         mediaItem.setSize(file.length());
+                        mediaItem.setLastModifiedTime(file.lastModified());
+                        String path = file.getPath();
+                        Bitmap bitmap = FileUtils.getVideoThumbnail(mContext, mediaItem.getData(), 60, 60, MediaStore.Images.Thumbnails.MICRO_KIND);
+                        if (bitmap != null) {
+                            int index = path.lastIndexOf("/");
+                            String savePath = path.substring(0, index);
+                            String saveName = path.substring(index + 1, path.length()) + ".jpg";
+                            mediaItem.setImageUrl(savePath + File.separator + saveName);
+                            FileUtils.saveBitmap(savePath, saveName, bitmap);
+                        }
+                        MediaItem.save(mediaItem);
                         mediaItemList.add(mediaItem);
                     }
                 } else {
@@ -100,11 +127,22 @@ public class VideoModel {
         }
     }
 
+    private static final int MSG_LOCALDB = 10;
+    private static final int MSG_CURRENTMEDIA = 20;//当前扫描出来的
     private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            if (mVideoDataInterface != null) {
-                mVideoDataInterface.getDataList(mediaItemList);
+            switch (msg.what) {
+                case MSG_LOCALDB:
+                    if (mVideoDataInterface != null) {
+                        mVideoDataInterface.getDataList(localmediaItemList);
+                    }
+                    break;
+                case MSG_CURRENTMEDIA:
+                    if (mVideoDataInterface != null) {
+                        mVideoDataInterface.getDataList(mediaItemList);
+                    }
+                    break;
             }
         }
     };

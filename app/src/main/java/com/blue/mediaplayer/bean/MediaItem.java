@@ -1,13 +1,18 @@
 package com.blue.mediaplayer.bean;
 
 
+import android.support.annotation.NonNull;
+
+import com.orm.SugarRecord;
+import com.orm.dsl.Column;
+
 import java.io.Serializable;
 
 /**
  * Created by xingyatong on 2018/4/2.
  */
 
-public class MediaItem implements Serializable {
+public class MediaItem extends SugarRecord implements Serializable, Comparable<MediaItem> {
 
     private String name;
 
@@ -15,6 +20,7 @@ public class MediaItem implements Serializable {
 
     private long size;
 
+    @Column(name = "data", unique = true)
     private String data;
 
     private String artist;
@@ -22,6 +28,16 @@ public class MediaItem implements Serializable {
     private String desc;
 
     private String imageUrl;
+
+    private long lastModifiedTime;
+
+    public long getLastModifiedTime() {
+        return lastModifiedTime;
+    }
+
+    public void setLastModifiedTime(long lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
+    }
 
     public String getName() {
         return name;
@@ -77,5 +93,16 @@ public class MediaItem implements Serializable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public int compareTo(@NonNull MediaItem another) {
+        if (this.lastModifiedTime > another.lastModifiedTime) {
+            return -1;
+        } else if (this.lastModifiedTime < another.lastModifiedTime) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

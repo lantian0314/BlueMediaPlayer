@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -24,8 +23,10 @@ import com.blue.mediaplayer.bean.MediaItem;
 import com.blue.mediaplayer.mvp.persenter.VideoPresenter;
 import com.blue.mediaplayer.mvp.view.VideoView;
 import com.blue.mediaplayer.ui.activity.VideoPlayActivity;
+import com.blue.model_basic.utils.LogUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,6 +62,7 @@ public class VideoFragment extends Fragment implements VideoView {
     private Context mContext;
     private ArrayList<MediaItem> mediaItemList;
     private VideoPresenter videoPresenter;
+    private MVideoRecyclerAdapter mVideoRecyclerAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,18 +89,11 @@ public class VideoFragment extends Fragment implements VideoView {
     }
 
     @Override
-    public void videoList(ArrayList<MediaItem> mediaItemList) {
-        if (mediaItemList != null && mediaItemList.size() > 0) {
-            this.mediaItemList = mediaItemList;
-            //设置适配器
-            MVideoRecyclerAdapter mVideoRecyclerAdapter = new MVideoRecyclerAdapter(mContext, mediaItemList, true);
-            //设置监听
-            mVideoRecyclerAdapter.setMyClickListener(new recyclerClickListener());
-            mRecyclerView.setAdapter(mVideoRecyclerAdapter);
-            //布局管理器
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
-            //设置布局管理器
-            mRecyclerView.setLayoutManager(linearLayoutManager);
+    public void videoList(ArrayList<MediaItem> mediaList) {
+        if (mediaList != null && mediaList.size() > 0) {
+            this.mediaItemList = mediaList;
+            Collections.sort(mediaItemList);
+            getmVideoRecyclerAdapter(mediaItemList);
             mVideoRecyclerAdapter.notifyDataSetChanged();
             //把文本隐藏
             tv_nomedia.setVisibility(View.GONE);
@@ -108,6 +103,23 @@ public class VideoFragment extends Fragment implements VideoView {
         }
         //ProgressBar隐藏
         pb_loading.setVisibility(View.GONE);
+    }
+
+
+    private void getmVideoRecyclerAdapter(ArrayList<MediaItem> mediaItemList) {
+        try {
+            //设置适配器
+            mVideoRecyclerAdapter = new MVideoRecyclerAdapter(mContext, mediaItemList, true);
+            //设置监听
+            mVideoRecyclerAdapter.setMyClickListener(new recyclerClickListener());
+            mRecyclerView.setAdapter(mVideoRecyclerAdapter);
+            //布局管理器
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
+            //设置布局管理器
+            mRecyclerView.setLayoutManager(linearLayoutManager);
+        } catch (Exception e) {
+            LogUtil.e(e);
+        }
     }
 
     @Override

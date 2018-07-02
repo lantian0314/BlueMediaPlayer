@@ -1,7 +1,6 @@
 package com.blue.model_basic.utils;
 
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedWriter;
@@ -19,7 +18,6 @@ import java.util.Locale;
  * Created by GaryChan on 16/5/3.
  */
 public class LogUtil {
-    public static String customTagPrefix = "";  // 自定义Tag的前缀，可以是作者名
     public static boolean isSaveLog = false;    // 是否把保存日志到SD卡中
     public static final String LOG_PATH = Environment.getExternalStorageDirectory().getPath(); // SD卡中的根目录
 
@@ -33,16 +31,9 @@ public class LogUtil {
     public static boolean allowE = true;
     public static boolean allowI = true;
     public static boolean allowV = true;
-    public static boolean allowW = true;
-    public static boolean allowWtf = true;
 
-    private static String generateTag(StackTraceElement caller) {
-        String tag = "%s.%s(Line:%d)"; // 占位符
-        String callerClazzName = caller.getClassName(); // 获取到类名
-        callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
-        tag = String.format(tag, callerClazzName, caller.getMethodName(), caller.getLineNumber()); // 替换
-        tag = TextUtils.isEmpty(customTagPrefix) ? tag : customTagPrefix + ":" + tag;
-
+    private static String generateTag() {
+        String tag = "com.media"; // 占位符
         return tag;
     }
 
@@ -66,19 +57,6 @@ public class LogUtil {
 
         void v(String tag, String content);
 
-        void v(String tag, String content, Throwable e);
-
-        void w(String tag, String content);
-
-        void w(String tag, String content, Throwable e);
-
-        void w(String tag, Throwable tr);
-
-        void wtf(String tag, String content);
-
-        void wtf(String tag, String content, Throwable e);
-
-        void wtf(String tag, Throwable tr);
     }
 
     public static void d(String content) {
@@ -86,8 +64,7 @@ public class LogUtil {
             return;
         }
 
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
+        String tag = generateTag();
 
         if (customLogger != null) {
             customLogger.d(tag, content);
@@ -101,8 +78,7 @@ public class LogUtil {
             return;
         }
 
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
+        String tag = generateTag();
 
         if (customLogger != null) {
             customLogger.d(tag, content, e);
@@ -117,7 +93,7 @@ public class LogUtil {
         }
 
         StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
+        String tag = generateTag();
 
         if (customLogger != null) {
             customLogger.e(tag, content);
@@ -134,9 +110,7 @@ public class LogUtil {
             return;
         }
 
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
-
+        String tag = generateTag();
         if (customLogger != null) {
             customLogger.e(tag, "error", e);
         } else {
@@ -152,8 +126,7 @@ public class LogUtil {
             return;
         }
 
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
+        String tag = generateTag();
 
         if (customLogger != null) {
             customLogger.e(tag, content, e);
@@ -170,8 +143,7 @@ public class LogUtil {
             return;
         }
 
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
+        String tag = generateTag();
 
         if (customLogger != null) {
             customLogger.i(tag, content);
@@ -188,8 +160,7 @@ public class LogUtil {
             return;
         }
 
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
+        String tag = generateTag();
 
         if (customLogger != null) {
             customLogger.i(tag, content, e);
@@ -206,8 +177,7 @@ public class LogUtil {
             return;
         }
 
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
+        String tag = generateTag();
 
         if (customLogger != null) {
             customLogger.v(tag, content);
@@ -219,131 +189,6 @@ public class LogUtil {
         }
     }
 
-    public static void v(String content, Throwable e) {
-        if (!allowV) {
-            return;
-        }
-
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
-
-        if (customLogger != null) {
-            customLogger.v(tag, content, e);
-        } else {
-            Log.v(tag, content, e);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, content);
-        }
-    }
-
-    public static void w(String content) {
-        if (!allowW) {
-            return;
-        }
-
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
-
-        if (customLogger != null) {
-            customLogger.w(tag, content);
-        } else {
-            Log.w(tag, content);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, content);
-        }
-    }
-
-    public static void w(String content, Throwable e) {
-        if (!allowW) {
-            return;
-        }
-
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
-
-        if (customLogger != null) {
-            customLogger.w(tag, content, e);
-        } else {
-            Log.w(tag, content, e);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, content);
-        }
-    }
-
-    public static void w(Throwable e) {
-        if (!allowW) {
-            return;
-        }
-
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
-
-        if (customLogger != null) {
-            customLogger.w(tag, e);
-        } else {
-            Log.w(tag, e);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, e.toString());
-        }
-    }
-
-    public static void wtf(String content) {
-        if (!allowWtf) {
-            return;
-        }
-
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
-
-        if (customLogger != null) {
-            customLogger.wtf(tag, content);
-        } else {
-            Log.wtf(tag, content);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, content);
-        }
-    }
-
-    public static void wtf(String content, Throwable e) {
-        if (!allowWtf) {
-            return;
-        }
-
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
-
-        if (customLogger != null) {
-            customLogger.wtf(tag, content, e);
-        } else {
-            Log.wtf(tag, content, e);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, content);
-        }
-    }
-
-    public static void wtf(Throwable e) {
-        if (!allowWtf) {
-            return;
-        }
-
-        StackTraceElement caller = getCallerStackTraceElement();
-        String tag = generateTag(caller);
-
-        if (customLogger != null) {
-            customLogger.wtf(tag, e);
-        } else {
-            Log.wtf(tag, e);
-        }
-        if (isSaveLog) {
-            point(LOG_PATH, tag, e.toString());
-        }
-    }
 
     private static StackTraceElement getCallerStackTraceElement() {
         return Thread.currentThread().getStackTrace()[4];

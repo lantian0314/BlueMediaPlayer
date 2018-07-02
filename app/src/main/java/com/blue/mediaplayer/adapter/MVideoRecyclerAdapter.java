@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.bean.MediaItem;
 import com.blue.model_basic.utils.Utils;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -90,9 +91,8 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
             if (!isVideo) {
                 iv_icon.setImageResource(R.drawable.music_default_bg);
             }
-            if (!TextUtils.isEmpty(mediaItem.getData())) {
-                Bitmap bitmap = getVideoThumbnail(mediaItem.getData(), 60, 60, MediaStore.Images.Thumbnails.MICRO_KIND);
-                iv_icon.setImageBitmap(bitmap);
+            if (!TextUtils.isEmpty(mediaItem.getImageUrl())) {
+                Glide.with(mContext).load(mediaItem.getImageUrl()).into(iv_icon);
             }
         }
     }
@@ -105,30 +105,5 @@ public class MVideoRecyclerAdapter extends RecyclerView.Adapter<MVideoRecyclerAd
         if (onMyClickListener != null) {
             this.onMyClickListener = onMyClickListener;
         }
-    }
-
-
-    /**
-     * 获取视频文件的缩略图
-     *
-     * @param videoPath
-     * @param width
-     * @param height
-     * @param kind
-     * @return
-     */
-    private Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
-        Bitmap bitmap = null;
-        try {
-            // 获取视频的缩略图
-            bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
-            bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
-                    ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-            if (bitmap == null) {
-                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.video_default_icon);
-            }
-        } catch (Exception e) {
-        }
-        return bitmap;
     }
 }
