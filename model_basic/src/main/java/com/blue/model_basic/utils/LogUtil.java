@@ -88,16 +88,11 @@ public class LogUtil {
     }
 
     public static void e(String content) {
-
         String tag = generateTag();
         Log.e(tag, content);
     }
 
     public static void e(Throwable e) {
-        if (!allowE) {
-            return;
-        }
-
         String tag = generateTag();
         Log.e(tag, e.getMessage(), e);
     }

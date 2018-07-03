@@ -1,6 +1,9 @@
 package com.blue.mediaplayer.mvp.model;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.TextUtils;
 
 import com.blue.mediaplayer.bean.MediaItem;
@@ -8,6 +11,7 @@ import com.blue.mediaplayer.bean.MessageEvent;
 import com.blue.mediaplayer.bean.NetMediaItem;
 import com.blue.mediaplayer.utils.Constants;
 import com.blue.mediaplayer.utils.HttpUtils;
+import com.blue.model_basic.utils.LogUtil;
 import com.blue.model_basic.utils.ShareUtils;
 import com.google.gson.Gson;
 
@@ -31,7 +35,6 @@ public class NetVideoModel {
 
     public void getNetVideoList(final Context context, netVideoDataInterface netVideoDataInterface) {
         this.mVideoDataInterface = netVideoDataInterface;
-        EventBus.getDefault().register(this);
         String result = ShareUtils.getInstance(context).getString(Constants.NET_URL);
         if (!TextUtils.isEmpty(result)) {
             parserJson(result);
@@ -56,12 +59,12 @@ public class NetVideoModel {
                                     parserJson(result);
                                 }
                             } catch (Exception e) {
-
+                                LogUtil.e(e);
                             }
                         }
                     });
                 } catch (Exception e) {
-
+                    LogUtil.e(e);
                 }
             }
         }.start();
@@ -94,10 +97,9 @@ public class NetVideoModel {
                     mediaItemList.add(mediaItem);
                 }
             }
-            //回调得到的数据
-            EventBus.getDefault().post(new MessageEvent());
+            mHandler.sendEmptyMessage(10);
         } catch (Exception e) {
-
+            LogUtil.e(e);
         }
     }
 
@@ -105,11 +107,12 @@ public class NetVideoModel {
         void getDataList(ArrayList<MediaItem> mediaItemList);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MessageEvent messageEvent) {
-        if (mVideoDataInterface != null) {
-            mVideoDataInterface.getDataList(mediaItemList);
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            if (mVideoDataInterface != null) {
+                mVideoDataInterface.getDataList(mediaItemList);
+            }
         }
-        EventBus.getDefault().unregister(this);
-    }
+    };
 }

@@ -176,10 +176,20 @@
 -keep class io.vov.utils.** { *; }
 -keep class io.vov.vitamio.** { *; }
 
+#okhttp
+-dontwarn okhttp3.**
+-keep class okhttp3.**{*;}
+
+#okio
+-dontwarn okio.**
+-keep class okio.**{*;}
+
+
 #不混淆自己的包
 
 -keep class com.blue.mediaplayer.mvp.** { * ;}
 -keep class com.blue.mediaplayer.ui.** { * ;}
+-keep class com.blue.mediaplayer.bean.** { * ;}
 
 #如果不想混淆JavaBean类即实体类不被混淆
 #-keep class com.stonebox.smartcleaner.model.** { *; }
