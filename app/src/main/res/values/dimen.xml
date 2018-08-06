@@ -2,4 +2,5 @@
 <resources>
     <dimen name="main_line_height">2.7dp</dimen><!--8px-->
     <dimen name="main_matrix_width">95dp</dimen>
+    <dimen name="bottombar_wechat_height">52dp</dimen>
 </resources>

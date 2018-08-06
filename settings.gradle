@@ -1,1 +1,1 @@
-include ':app', ':model_basic', ':startallplayer',':vitamio'
+include ':app', ':model_basic', ':startallplayer',':vitamio',':fragmentation', ':fragmentation_core', ':fragmentation_swipeback'

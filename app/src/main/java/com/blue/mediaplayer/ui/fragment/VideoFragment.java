@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.adapter.MNetVideoRecyclerAdapter;
 import com.blue.mediaplayer.adapter.MVideoRecyclerAdapter;
+import com.blue.mediaplayer.base.BaseMainFragment;
 import com.blue.mediaplayer.bean.MediaItem;
 import com.blue.mediaplayer.bean.MessageEvent;
 import com.blue.mediaplayer.mvp.persenter.VideoPresenter;
@@ -44,7 +45,7 @@ import butterknife.ButterKnife;
  * Created by xingyatong on 2018/4/2.
  */
 
-public class VideoFragment extends Fragment implements VideoView {
+public class VideoFragment extends BaseMainFragment implements VideoView {
     @BindView(R.id.video_recycler)
     RecyclerView mRecyclerView;
     @BindView(R.id.tv_nomedia)
@@ -73,6 +74,13 @@ public class VideoFragment extends Fragment implements VideoView {
     private ArrayList<MediaItem> NetmediaItemList;
     private VideoPresenter videoPresenter;
     private MVideoRecyclerAdapter mVideoRecyclerAdapter;
+
+    public static VideoFragment newInstance() {
+        Bundle args = new Bundle();
+        VideoFragment fragment = new VideoFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -181,7 +189,11 @@ public class VideoFragment extends Fragment implements VideoView {
             Intent intent = new Intent(mContext, VideoPlayActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             Bundle bundle = new Bundle();
-            bundle.putSerializable("videolist", mediaItemList);
+            if (isShowlocalView) {
+                bundle.putSerializable("videolist", mediaItemList);
+            } else {
+                bundle.putSerializable("videolist", NetmediaItemList);
+            }
             intent.putExtras(bundle);
             intent.putExtra("position", position);
             mContext.startActivityForResult(intent, 1);

@@ -7,4 +7,6 @@
     <color name="white">#ffffff</color>
     <color name="blue">#0000ff</color>
     <color name="red">#FF0000</color>
+
+    <color name="tab_unselect">#c9c9c9</color>
 </resources>

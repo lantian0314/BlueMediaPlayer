@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.blue.mediaplayer.R;
 import com.blue.mediaplayer.adapter.MNetVideoRecyclerAdapter;
 import com.blue.mediaplayer.adapter.MVideoRecyclerAdapter;
+import com.blue.mediaplayer.base.BaseMainFragment;
 import com.blue.mediaplayer.bean.MediaItem;
 import com.blue.mediaplayer.mvp.persenter.AudioPresenter;
 import com.blue.mediaplayer.mvp.persenter.VideoPresenter;
@@ -35,7 +36,7 @@ import butterknife.ButterKnife;
  * Created by xingyatong on 2018/4/2.
  */
 
-public class AudioFragment extends Fragment implements VideoView {
+public class AudioFragment extends BaseMainFragment implements VideoView {
     @BindView(R.id.video_recycler)
     RecyclerView mRecyclerView;
     @BindView(R.id.tv_nomedia)
@@ -62,6 +63,13 @@ public class AudioFragment extends Fragment implements VideoView {
     private Context mContext;
     private ArrayList<MediaItem> mediaItemList;
     private AudioPresenter audioPresenter;
+
+    public static AudioFragment newInstance() {
+        Bundle args = new Bundle();
+        AudioFragment fragment = new AudioFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
