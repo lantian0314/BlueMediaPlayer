@@ -9,6 +9,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.database.MediaItemDatabase;
 import com.blue.mediaplayer.utils.FileUtils;
 import com.blue.mediaplayer.utils.MimeTypes;
 import com.blue.model_basic.utils.LogUtil;
@@ -29,6 +30,7 @@ public class VideoModel {
     private videoDataInterface mVideoDataInterface;
 
     private final int SCAN_LEVEL = 8;//扫描文件的深度
+    private boolean isScanData = false;
 
 
     public VideoModel(Context context) {
@@ -56,38 +58,16 @@ public class VideoModel {
     }
 
     private void querlMediaDb() {
-        List<MediaItem> mediaItemList = MediaItem.listAll(MediaItem.class);
+        List<MediaItem> mediaItemList = MediaItemDatabase.getAllItem();
         if (mediaItemList != null && mediaItemList.size() > 0) {
+            isScanData = true;
             localmediaItemList.addAll(mediaItemList);
             mHandler.sendEmptyMessage(MSG_LOCALDB);
+        } else {
+            isScanData = false;
         }
 
     }
-
-//    private void queryDb() {
-//        ContentResolver contentResolver = mContext.getContentResolver();
-//        Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-//        String[] objs = {
-//                MediaStore.Video.Media.DISPLAY_NAME,//视频文件在sdcard的名称
-//                MediaStore.Video.Media.DURATION,//视频总时长
-//                MediaStore.Video.Media.SIZE,//视频的文件大小
-//                MediaStore.Video.Media.DATA,//视频的绝对地址
-//                MediaStore.Video.Media.ARTIST,//歌曲的演唱者
-//        };
-//        Cursor cursor = contentResolver.query(uri, objs, null, null, null);
-//        if (cursor != null) {
-//            while (cursor.moveToNext()) {
-//                MediaItem mediaItem = new MediaItem();
-//                mediaItemList.add(mediaItem);
-//                mediaItem.setName(cursor.getString(0));
-//                mediaItem.setDuration(cursor.getLong(1));
-//                mediaItem.setSize(cursor.getLong(2));
-//                mediaItem.setData(cursor.getString(3));
-//                mediaItem.setArtist(cursor.getString(4));
-//            }
-//            cursor.close();
-//        }
-//    }
 
     public interface videoDataInterface {
         void getData(MediaItem mediaItem);
@@ -110,12 +90,9 @@ public class VideoModel {
                         mediaItem.setSize(file.length());
                         mediaItem.setLastModifiedTime(file.lastModified());
                         updateVideoIcon(file, mediaItem);
-                        updateVideDuration(mediaItem);
+                        MediaItemDatabase.setItemDuration(mediaItem);
                         MediaItem.save(mediaItem);
-                        Message message = new Message();
-                        message.what = MSG_CURRENTSINGLEMEDIA;
-                        message.obj = mediaItem;
-                        mHandler.sendMessage(message);
+                        updateMediaItem(mediaItem);
                         mediaItemList.add(mediaItem);
                     }
                 } else {
@@ -127,18 +104,12 @@ public class VideoModel {
         }
     }
 
-    /**
-     * 更新视频的播放总时长
-     *
-     * @param mediaItem
-     */
-    private void updateVideDuration(MediaItem mediaItem) {
-        List<MediaItem> updateList = MediaItem.find(MediaItem.class, "data=?", mediaItem.getData());
-        if (updateList != null && updateList.size() > 0) {
-            for (int i = 0; i < updateList.size(); i++) {
-                MediaItem tempMedia = updateList.get(i);
-                mediaItem.setDuration(tempMedia.getDuration());
-            }
+    private void updateMediaItem(MediaItem mediaItem) {
+        if (!isScanData) {
+            Message message = new Message();
+            message.what = MSG_CURRENTSINGLEMEDIA;
+            message.obj = mediaItem;
+            mHandler.sendMessage(message);
         }
     }
 
@@ -191,33 +162,28 @@ public class VideoModel {
         }
     };
 
-    /**
-     * 删除本地数据库存储的文件
-     *
-     * @param path
-     */
-    public void deleteDbVideo(String path) {
-        List<MediaItem> deleteList = MediaItem.find(MediaItem.class, "data=?", path);
-        if (deleteList != null && deleteList.size() > 0) {
-            for (int i = 0; i < deleteList.size(); i++) {
-                deleteList.get(i).delete();
-            }
-        }
-    }
-
-    /**
-     * 删除本地数据库存储的文件
-     *
-     * @param path
-     */
-    public void UpdateDbVideo(String path, long duration) {
-        List<MediaItem> updateList = MediaItem.find(MediaItem.class, "data=?", path);
-        if (updateList != null && updateList.size() > 0) {
-            for (int i = 0; i < updateList.size(); i++) {
-                MediaItem mediaItem = updateList.get(i);
-                mediaItem.setDuration(duration);
-                mediaItem.save();
-            }
-        }
-    }
+    //    private void queryDb() {
+//        ContentResolver contentResolver = mContext.getContentResolver();
+//        Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+//        String[] objs = {
+//                MediaStore.Video.Media.DISPLAY_NAME,//视频文件在sdcard的名称
+//                MediaStore.Video.Media.DURATION,//视频总时长
+//                MediaStore.Video.Media.SIZE,//视频的文件大小
+//                MediaStore.Video.Media.DATA,//视频的绝对地址
+//                MediaStore.Video.Media.ARTIST,//歌曲的演唱者
+//        };
+//        Cursor cursor = contentResolver.query(uri, objs, null, null, null);
+//        if (cursor != null) {
+//            while (cursor.moveToNext()) {
+//                MediaItem mediaItem = new MediaItem();
+//                mediaItemList.add(mediaItem);
+//                mediaItem.setName(cursor.getString(0));
+//                mediaItem.setDuration(cursor.getLong(1));
+//                mediaItem.setSize(cursor.getLong(2));
+//                mediaItem.setData(cursor.getString(3));
+//                mediaItem.setArtist(cursor.getString(4));
+//            }
+//            cursor.close();
+//        }
+//    }
 }

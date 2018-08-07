@@ -3,6 +3,7 @@ package com.blue.mediaplayer.mvp.persenter;
 import android.content.Context;
 
 import com.blue.mediaplayer.bean.MediaItem;
+import com.blue.mediaplayer.database.MediaItemDatabase;
 import com.blue.mediaplayer.mvp.model.NetVideoModel;
 import com.blue.mediaplayer.mvp.model.VideoModel;
 import com.blue.mediaplayer.mvp.view.VideoView;
@@ -59,6 +60,6 @@ public class VideoPresenter extends BasePresenter<VideoView> {
     }
 
     public void deleteDbVideo(String path) {
-        videoModel.deleteDbVideo(path);
+        MediaItemDatabase.deleteDbVideo(path);
     }
 }
