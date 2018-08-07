@@ -3,7 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--设置全屏-->
-        <item name="android:windowFullscreen">true</item>
+        <!--<item name="android:windowFullscreen">true</item>-->
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -43,5 +43,18 @@
             <item name="android:taskToBackEnterAnimation">@null</item>
             <item name="android:taskToBackExitAnimation">@null</item>
 
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="tab_appearance">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Toolbar_TextAppearance_White">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>

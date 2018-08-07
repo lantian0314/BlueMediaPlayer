@@ -5,4 +5,7 @@
     <string name="dynamic">动态</string>
     <string name="search_default_txt">全网搜索</string>
     <string name="playname">mediaplayer(system recommend)</string>
+
+    <string name="local_video">本地视频</string>
+    <string name="net_video">网络视频</string>
 </resources>

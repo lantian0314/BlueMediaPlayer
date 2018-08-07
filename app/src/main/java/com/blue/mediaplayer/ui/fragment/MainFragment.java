@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.blue.mediaplayer.R;
+import com.blue.mediaplayer.ui.fragment.first.FirstFragmentManager;
+import com.blue.mediaplayer.ui.fragment.first.VideoFragment;
 import com.blue.mediaplayer.view.BottomBar;
 import com.blue.mediaplayer.view.BottomBarTab;
 
@@ -46,9 +48,9 @@ public class MainFragment extends SupportFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        SupportFragment firstFragment = findChildFragment(VideoFragment.class);
+        SupportFragment firstFragment = findChildFragment(FirstFragmentManager.class);
         if (firstFragment == null) {
-            mFragments[FIRST] = VideoFragment.newInstance();
+            mFragments[FIRST] = FirstFragmentManager.newInstance();
             mFragments[SECOND] = AudioFragment.newInstance();
             mFragments[THIRD] = DynamicFragment.newInstance();
 

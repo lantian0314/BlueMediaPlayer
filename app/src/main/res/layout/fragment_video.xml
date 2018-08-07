@@ -32,7 +32,7 @@
         layout="@layout/fl_localvideo" />
 
     <include
-        android:visibility="gone"
         android:id="@+id/ll_netvideo"
-        layout="@layout/fl_netvideo" />
+        layout="@layout/fl_netvideo"
+        android:visibility="gone" />
 </LinearLayout>
