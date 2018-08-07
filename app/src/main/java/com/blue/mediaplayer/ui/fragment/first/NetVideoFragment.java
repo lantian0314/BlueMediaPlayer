@@ -77,6 +77,11 @@ public class NetVideoFragment extends BaseMainFragment implements VideoView {
 
 
     @Override
+    public void videoData(MediaItem mediaItem) {
+
+    }
+
+    @Override
     public void videoList(ArrayList<MediaItem> mediaList) {
     }
 

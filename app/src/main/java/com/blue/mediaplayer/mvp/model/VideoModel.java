@@ -90,6 +90,8 @@ public class VideoModel {
 //    }
 
     public interface videoDataInterface {
+        void getData(MediaItem mediaItem);
+
         void getDataList(ArrayList<MediaItem> mediaItemList);
     }
 
@@ -110,6 +112,10 @@ public class VideoModel {
                         updateVideoIcon(file, mediaItem);
                         updateVideDuration(mediaItem);
                         MediaItem.save(mediaItem);
+                        Message message = new Message();
+                        message.what = MSG_CURRENTSINGLEMEDIA;
+                        message.obj = mediaItem;
+                        mHandler.sendMessage(message);
                         mediaItemList.add(mediaItem);
                     }
                 } else {
@@ -160,6 +166,7 @@ public class VideoModel {
 
     private static final int MSG_LOCALDB = 10;
     private static final int MSG_CURRENTMEDIA = 20;//当前扫描出来的
+    private static final int MSG_CURRENTSINGLEMEDIA = 30;//当前单个文件
     private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -172,6 +179,12 @@ public class VideoModel {
                 case MSG_CURRENTMEDIA:
                     if (mVideoDataInterface != null) {
                         mVideoDataInterface.getDataList(mediaItemList);
+                    }
+                    break;
+                case MSG_CURRENTSINGLEMEDIA:
+                    if (mVideoDataInterface != null) {
+                        MediaItem mediaItem = (MediaItem) msg.obj;
+                        mVideoDataInterface.getData(mediaItem);
                     }
                     break;
             }

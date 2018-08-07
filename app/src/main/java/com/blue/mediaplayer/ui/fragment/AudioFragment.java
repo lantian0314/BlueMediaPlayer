@@ -95,6 +95,11 @@ public class AudioFragment extends BaseMainFragment implements VideoView {
     }
 
     @Override
+    public void videoData(MediaItem mediaItem) {
+
+    }
+
+    @Override
     public void videoList(ArrayList<MediaItem> mediaItemList) {
         if (mediaItemList != null && mediaItemList.size() > 0) {
             this.mediaItemList = mediaItemList;

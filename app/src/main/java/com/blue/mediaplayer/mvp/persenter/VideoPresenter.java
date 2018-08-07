@@ -31,6 +31,13 @@ public class VideoPresenter extends BasePresenter<VideoView> {
         videoView = getView();
         videoModel.getVideoList(new VideoModel.videoDataInterface() {
             @Override
+            public void getData(MediaItem mediaItem) {
+                if (videoView != null) {
+                    videoView.videoData(mediaItem);
+                }
+            }
+
+            @Override
             public void getDataList(ArrayList<MediaItem> mediaItemList) {
                 if (videoView != null) {
                     videoView.videoList(mediaItemList);
@@ -41,7 +48,7 @@ public class VideoPresenter extends BasePresenter<VideoView> {
 
     public void getNetVideoList() {
         videoView = getView();
-        netVideoModel.getNetVideoList(mContext,new NetVideoModel.netVideoDataInterface() {
+        netVideoModel.getNetVideoList(mContext, new NetVideoModel.netVideoDataInterface() {
             @Override
             public void getDataList(ArrayList<MediaItem> mediaItemList) {
                 if (videoView != null) {
@@ -51,7 +58,7 @@ public class VideoPresenter extends BasePresenter<VideoView> {
         });
     }
 
-    public void deleteDbVideo(String path){
+    public void deleteDbVideo(String path) {
         videoModel.deleteDbVideo(path);
     }
 }

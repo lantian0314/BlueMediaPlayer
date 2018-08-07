@@ -47,10 +47,9 @@ public class VideoFragment extends BaseMainFragment implements VideoView {
     TextView tv_nomedia;
     @BindView(R.id.pb_loading)
     ProgressBar pb_loading;
-    boolean isShowlocalView = true;
 
     private Activity mContext;
-    private ArrayList<MediaItem> mediaItemList;
+    private ArrayList<MediaItem> mediaItemList = new ArrayList<>();
     private VideoPresenter videoPresenter;
     private MVideoRecyclerAdapter mVideoRecyclerAdapter;
 
@@ -87,16 +86,35 @@ public class VideoFragment extends BaseMainFragment implements VideoView {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fl_localvideo, container, false);
         ButterKnife.bind(this, view);
+        initAdapter();
         return view;
     }
 
 
     @Override
+    public void videoData(MediaItem mediaItem) {
+        if (mediaItem != null) {
+            this.mediaItemList.add(mediaItem);
+            Collections.sort(mediaItemList);
+            mVideoRecyclerAdapter.notifyDataSetChanged();
+            //把文本隐藏
+            tv_nomedia.setVisibility(View.GONE);
+        } else {
+            //没有数据文本显示
+            tv_nomedia.setVisibility(View.VISIBLE);
+        }
+        //ProgressBar隐藏
+        pb_loading.setVisibility(View.GONE);
+    }
+
+    @Override
     public void videoList(ArrayList<MediaItem> mediaList) {
         if (mediaList != null && mediaList.size() > 0) {
-            this.mediaItemList = mediaList;
+            if (mediaItemList != null && mediaItemList.size() > 0) {
+                mediaItemList.clear();
+            }
+            this.mediaItemList.addAll(mediaList);
             Collections.sort(mediaItemList);
-            getmVideoRecyclerAdapter(mediaItemList);
             mVideoRecyclerAdapter.notifyDataSetChanged();
             //把文本隐藏
             tv_nomedia.setVisibility(View.GONE);
@@ -109,7 +127,7 @@ public class VideoFragment extends BaseMainFragment implements VideoView {
     }
 
 
-    private void getmVideoRecyclerAdapter(ArrayList<MediaItem> mediaItemList) {
+    private void initAdapter() {
         try {
             //设置适配器
             mVideoRecyclerAdapter = new MVideoRecyclerAdapter(mContext, mediaItemList, true);
